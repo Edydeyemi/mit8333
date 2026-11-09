@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,6 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserOtp extends Model
 {
     use HasFactory;
+
+    public const TYPE_TWO_FACTOR = 'two_factor';
+    public const TYPE_PASSWORD_RESET = 'password_reset';
+    public const TYPE_PASSWORD_MODIFICATION = 'password_modification';
+    public const TYPE_EMAIL_VERIFICATION = 'email_verification';
 
     /**
      * The table associated with the model.
@@ -66,5 +73,21 @@ class UserOtp extends Model
     public function hasExceededMaxAttempts(int $maxAttempts = 5): bool
     {
         return $this->attempts >= $maxAttempts;
+    }
+
+    /**
+     * Increment verification attempts.
+     */
+    public function incrementAttempts(): void
+    {
+        $this->increment('attempts');
+    }
+
+    /**
+     * Check if a supplied code matches.
+     */
+    public function matches(string $code): bool
+    {
+        return hash_equals((string) $this->code, trim($code));
     }
 }
