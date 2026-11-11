@@ -22,7 +22,8 @@ class LoginController extends Controller
 {
     public function __construct(
         protected OtpService $otpService
-    ) {}
+    ) {
+    }
 
     /**
      * Show login form.
@@ -64,7 +65,7 @@ class LoginController extends Controller
                 'ip' => $request->ip(),
             ]);
 
-            $msg = 'Invalid university email or password credentials.';
+            $msg = 'Invalid email or password credentials.';
 
             if ($request->expectsJson()) {
                 return response()->json(['status' => 'error', 'message' => $msg], 422);
