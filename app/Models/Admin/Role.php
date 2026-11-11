@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Admin;
 
 use App\Models\User;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable;
+
+    protected $table = 'roles';
 
     protected $fillable = [
         'name',
@@ -19,11 +24,19 @@ class Role extends Model
     ];
 
     /**
+     * Get route key name for implicit model binding.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'role_slug';
+    }
+
+    /**
      * Get the permissions associated with the role.
      */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class, 'role_permissions')
+        return $this->belongsToMany(Permission::class, 'role_permissions', 'role_id', 'permission_id')
             ->withPivot('created_by', 'updated_by')
             ->withTimestamps();
     }
@@ -33,7 +46,7 @@ class Role extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'role_user')
+        return $this->belongsToMany(User::class, 'role_user', 'role_id', 'user_id')
             ->withPivot('created_by')
             ->withTimestamps();
     }

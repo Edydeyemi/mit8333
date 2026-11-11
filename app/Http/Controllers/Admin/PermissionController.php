@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
+use App\Models\Admin\Permission;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -20,11 +22,14 @@ class PermissionController extends Controller
     }
 
     /**
-     * Sync permissions defined in app/AppPermissions.php into the permissions DB table.
+     * Sync permissions defined in AppPermissions.php into the permissions DB table.
      */
     public function sync(): RedirectResponse
     {
-        $appPermissions = require app_path('AppPermissions.php');
+        $appPermissions = file_exists(base_path('AppPermissions.php'))
+            ? require base_path('AppPermissions.php')
+            : ['permissions' => []];
+
         $permissionList = $appPermissions['permissions'] ?? [];
 
         $syncedCount = 0;
@@ -36,7 +41,7 @@ class PermissionController extends Controller
             $syncedCount++;
         }
 
-        return redirect()->route('admin.permissions.index')
-            ->with('success', "Permissions synchronized successfully ({$syncedCount} permissions synced).");
+        return redirect()->route('admin.roles.index')
+            ->with('success', "Permissions synchronized successfully ({$syncedCount} canonical permissions updated in catalog).");
     }
 }

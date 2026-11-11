@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordModificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -47,6 +48,12 @@ Route::middleware('auth')->group(function () {
     // Password Modification (Authenticated)
     Route::post('/profile/password/send-otp', [PasswordModificationController::class, 'sendModificationOtp'])->name('profile.password.otp');
     Route::put('/profile/password', [PasswordModificationController::class, 'update'])->name('profile.password.update');
+
+    // Central Active Notifications Endpoints
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/active', [NotificationController::class, 'active'])->name('notifications.active');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 });
 
 // Modular Portals Routing
