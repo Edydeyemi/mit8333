@@ -13,7 +13,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->redirectTo(
+            guests: '/login',
+            users: function (Request $request): string {
+                $user = $request->user();
+                if (!$user) {
+                    return '/login';
+                }
+
+                return match ($user->role) {
+                    'super_admin', 'admin', 'data_entry' => '/admin',
+                    'officer' => '/facility',
+                    default => '/portal',
+                };
+            }
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

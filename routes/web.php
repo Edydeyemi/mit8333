@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordModificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +18,16 @@ use Illuminate\Support\Facades\Route;
 
 // Root / Public Landing Page
 Route::get('/', function () {
+    if (Auth::check()) {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return match ($user->role) {
+            'super_admin', 'admin', 'data_entry' => redirect()->route('admin.dashboard'),
+            'officer' => redirect()->route('facility.dashboard'),
+            default => redirect()->route('user.dashboard'),
+        };
+    }
+
     return redirect()->route('login');
 });
 
