@@ -131,7 +131,7 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
-        // Mask email for display (e.g. s***t@mit.edu)
+        // Mask email for display (e.g. s***t@unilag.edu)
         $maskedEmail = $this->maskEmail($user->email);
         $cooldown = $this->otpService->getRemainingCooldown($user, UserOtp::TYPE_TWO_FACTOR);
 

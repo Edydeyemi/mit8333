@@ -20,6 +20,8 @@
 
 <body>
 
+    <div id="globalPageLoader" class="page-loader-progress"></div>
+
     <div class="auth-split-wrapper">
         <div class="auth-form-side">
             <div class="mb-4">
@@ -70,7 +72,8 @@
                             </span>
                             <input type="email" name="email" id="recoveryEmail"
                                 class="form-control form-control-headworld border-start-0 @error('email') is-invalid @enderror"
-                                placeholder="name@mit.edu" value="{{ old('email', 'student@mit.edu') }}" required autofocus>
+                                placeholder="name@unilag.edu" value="{{ old('email', 'student@unilag.edu') }}" required
+                                autofocus>
                         </div>
                         @error('email')
                             <div class="text-danger small mt-1">{{ $message }}</div>
@@ -108,7 +111,8 @@
                             </span>
                             <input type="email" name="email" id="resetEmailInput"
                                 class="form-control form-control-headworld border-start-0 @error('email') is-invalid @enderror"
-                                placeholder="name@mit.edu" value="{{ old('email', session('reset_email', 'student@mit.edu')) }}" required>
+                                placeholder="name@unilag.edu"
+                                value="{{ old('email', session('reset_email', 'student@unilag.edu')) }}" required>
                         </div>
                     </div>
 
@@ -137,8 +141,8 @@
                             <input type="password" name="password" id="newPassword"
                                 class="form-control form-control-headworld border-start-0 border-end-0 @error('password') is-invalid @enderror"
                                 placeholder="Min. 8 characters with numbers & mixed case" required>
-                            <button class="btn border-start-0 bg-white text-muted" type="button"
-                                id="toggleNewPwdBtn" aria-label="Toggle password visibility">
+                            <button class="btn border-start-0 bg-white text-muted" type="button" id="toggleNewPwdBtn"
+                                aria-label="Toggle password visibility">
                                 <i class="bi bi-eye" id="toggleNewPwdIcon"></i>
                             </button>
                         </div>
@@ -146,7 +150,8 @@
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                         <div class="form-text small text-muted">
-                            Must contain at least 8 characters, with mixed uppercase and lowercase letters and at least one number.
+                            Must contain at least 8 characters, with mixed uppercase and lowercase letters and at least
+                            one number.
                         </div>
                     </div>
 
@@ -157,7 +162,8 @@
                                 <i class="bi bi-shield-lock"></i>
                             </span>
                             <input type="password" name="password_confirmation" id="newPasswordConfirm"
-                                class="form-control form-control-headworld border-start-0 border-end-0" placeholder="Confirm new password" required>
+                                class="form-control form-control-headworld border-start-0 border-end-0"
+                                placeholder="Confirm new password" required>
                             <button class="btn border-start-0 bg-white text-muted" type="button"
                                 id="toggleConfirmPwdBtn" aria-label="Toggle confirm password visibility">
                                 <i class="bi bi-eye" id="toggleConfirmPwdIcon"></i>
@@ -193,7 +199,8 @@
                 </div>
                 <h2 class="display-6 fw-bold text-white mb-3">Secure Account Recovery</h2>
                 <p class="text-white-50">
-                    Headworld credentials are encrypted and governed under institutional security standards. Password modifications require multi-factor identity authorization.
+                    Headworld credentials are encrypted and governed under institutional security standards. Password
+                    modifications require multi-factor identity authorization.
                 </p>
             </div>
         </div>

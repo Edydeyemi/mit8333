@@ -30,9 +30,13 @@ class RoleController extends Controller
             });
         }
 
+        $filters = array_filter([
+            'q' => $search ?: null,
+        ]);
+
         $roles = $query->orderBy('id', 'asc')
             ->paginate(15)
-            ->withQueryString();
+            ->appends($filters);
 
         // Load all available permissions grouped by functional module
         $allPermissions = Permission::orderBy('name', 'asc')->get();

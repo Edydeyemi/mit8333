@@ -40,6 +40,11 @@ class RegisterController extends Controller
                 'status' => 'active',
             ]);
 
+            $userRole = \App\Models\Admin\Role::where('role_slug', 'user')->first();
+            if ($userRole) {
+                $user->roles()->attach($userRole->id, ['created_by' => 'system']);
+            }
+
             AuditLog::log('user_registered', $user, [
                 'email' => $user->email,
                 'role' => $user->role,

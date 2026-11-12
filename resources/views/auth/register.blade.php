@@ -21,6 +21,8 @@
 
 <body>
 
+    <div id="globalPageLoader" class="page-loader-progress"></div>
+
     <div class="auth-split-wrapper">
         <div class="auth-form-side" style="max-width: 680px;">
             <div class="mb-4">
@@ -33,7 +35,8 @@
                     </div>
                 </a>
                 <h2 class="fw-bold text-navy-900 mt-1">Register University Profile</h2>
-                <p class="text-muted small">Register your student or staff profile to lodge maintenance requests and track on-campus repair dispatches.</p>
+                <p class="text-muted small">Register your student or staff profile to lodge maintenance requests and
+                    track on-campus repair dispatches.</p>
             </div>
 
             @if ($errors->any())
@@ -80,7 +83,7 @@
                         <label for="regEmail" class="form-label-headworld">University Email</label>
                         <input type="email" name="email" id="regEmail"
                             class="form-control-headworld @error('email') is-invalid @enderror"
-                            placeholder="e.g. j.hayes@mit.edu" value="{{ old('email') }}" required>
+                            placeholder="e.g. j.hayes@unilag.edu" value="{{ old('email') }}" required>
                         @error('email')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
@@ -99,20 +102,70 @@
 
                     <!-- Password -->
                     <div class="col-md-6">
-                        <label for="regPassword" class="form-label-headworld">Password</label>
-                        <input type="password" name="password" id="regPassword"
-                            class="form-control-headworld @error('password') is-invalid @enderror"
-                            placeholder="Min. 8 chars, mixed case & numbers" required>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label for="regPassword" class="form-label-headworld mb-0">Password</label>
+                            <button type="button" class="btn-generate-password" id="btnGenerateRegPassword"
+                                title="Generate a cryptographically strong random password">
+                                <i class="bi bi-magic text-warning"></i> Generate Strong
+                            </button>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" name="password" id="regPassword"
+                                class="form-control-headworld @error('password') is-invalid @enderror"
+                                placeholder="Min. 8 chars, mixed case & numbers" required autocomplete="new-password">
+                            <button type="button" class="btn btn-password-addon" id="btnToggleRegPassword"
+                                aria-label="Toggle password visibility">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
                         @error('password')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
+
+                        <!-- Strength Meter -->
+                        <div class="password-strength-container">
+                            <div class="password-strength-bar-wrapper">
+                                <div id="regStrengthBar" class="password-strength-bar"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted" style="font-size: 0.72rem;">Strength:</span>
+                                <span id="regStrengthText" class="small font-mono text-muted">No password</span>
+                            </div>
+                        </div>
+
+                        <!-- Requirements Checklist -->
+                        <div class="password-requirements-box" id="regPasswordReqs">
+                            <div class="password-requirements-title">
+                                <i class="bi bi-shield-check text-warning"></i> Policy Requirements
+                            </div>
+                            <ul class="password-requirements-list">
+                                <li class="req-item unmet" data-rule="length"><i class="bi bi-circle"></i> 8+ characters
+                                </li>
+                                <li class="req-item unmet" data-rule="upper"><i class="bi bi-circle"></i> Uppercase
+                                    (A-Z)</li>
+                                <li class="req-item unmet" data-rule="lower"><i class="bi bi-circle"></i> Lowercase
+                                    (a-z)</li>
+                                <li class="req-item unmet" data-rule="number"><i class="bi bi-circle"></i> Number (0-9)
+                                </li>
+                                <li class="req-item unmet" data-rule="symbol"><i class="bi bi-circle"></i> Special
+                                    symbol</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <!-- Confirm Password -->
                     <div class="col-md-6">
-                        <label for="regConfirmPassword" class="form-label-headworld">Confirm Password</label>
-                        <input type="password" name="password_confirmation" id="regConfirmPassword"
-                            class="form-control-headworld" placeholder="Repeat password" required>
+                        <label for="regConfirmPassword" class="form-label-headworld mb-1">Confirm Password</label>
+                        <div class="input-group">
+                            <input type="password" name="password_confirmation" id="regConfirmPassword"
+                                class="form-control-headworld" placeholder="Repeat password" required
+                                autocomplete="new-password">
+                            <button type="button" class="btn btn-password-addon" id="btnToggleRegConfirm"
+                                aria-label="Toggle confirm password visibility">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
+                        <div id="regMatchFeedback" class="password-match-box"></div>
                     </div>
                 </div>
 
@@ -129,7 +182,8 @@
 
                 <div class="text-center small text-muted">
                     Already registered?
-                    <a href="{{ route('login') }}" class="text-navy-900 fw-bold text-decoration-underline">Sign in here</a>
+                    <a href="{{ route('login') }}" class="text-navy-900 fw-bold text-decoration-underline">Sign in
+                        here</a>
                 </div>
             </form>
         </div>
@@ -142,7 +196,8 @@
                 </div>
                 <h2 class="display-6 fw-bold text-white mb-3">Rapid Campus Care for All Residents</h2>
                 <p class="text-white-50">
-                    From faulty lab power rails to broken hostel water pipes, your registered Headworld profile gives you a transparent window into active technicians, SLA timelines, and instant resolution feedback.
+                    From faulty lab power rails to broken hostel water pipes, your registered Headworld profile gives
+                    you a transparent window into active technicians, SLA timelines, and instant resolution feedback.
                 </p>
             </div>
 
@@ -159,7 +214,7 @@
     <script src="{{ asset('assets/js/toast.js') }}"></script>
     <script src="{{ asset('assets/js/theme.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/password-helper.js') }}"></script>
 </body>
 
 </html>
-

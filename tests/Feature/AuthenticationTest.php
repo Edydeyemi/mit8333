@@ -32,14 +32,14 @@ class AuthenticationTest extends TestCase
     public function test_user_login_triggers_2fa_and_redirects_to_2fa_screen(): void
     {
         $response = $this->post('/login', [
-            'email' => 'student@mit.edu',
+            'email' => 'student@unilag.edu',
             'password' => 'Headworld2026!',
         ]);
 
         $response->assertRedirect(route('login.2fa'));
         $this->assertTrue(session()->has('auth.2fa.user_id'));
 
-        $user = User::where('email', 'student@mit.edu')->first();
+        $user = User::where('email', 'student@unilag.edu')->first();
         $this->assertDatabaseHas('user_otps', [
             'user_id' => $user->id,
             'type' => UserOtp::TYPE_TWO_FACTOR,
@@ -48,7 +48,7 @@ class AuthenticationTest extends TestCase
 
     public function test_2fa_screen_renders_for_pending_user(): void
     {
-        $user = User::where('email', 'student@mit.edu')->first();
+        $user = User::where('email', 'student@unilag.edu')->first();
 
         $response = $this->withSession(['auth.2fa.user_id' => $user->id])
             ->get('/login/2fa');
@@ -59,7 +59,7 @@ class AuthenticationTest extends TestCase
 
     public function test_2fa_verification_fails_with_invalid_code(): void
     {
-        $user = User::where('email', 'student@mit.edu')->first();
+        $user = User::where('email', 'student@unilag.edu')->first();
         $otpService = app(OtpService::class);
         $otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
 
@@ -74,7 +74,7 @@ class AuthenticationTest extends TestCase
 
     public function test_2fa_verification_succeeds_and_logs_in_user(): void
     {
-        $user = User::where('email', 'student@mit.edu')->first();
+        $user = User::where('email', 'student@unilag.edu')->first();
         $otpService = app(OtpService::class);
         $code = $otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
 
@@ -89,7 +89,7 @@ class AuthenticationTest extends TestCase
 
     public function test_user_can_logout_safely(): void
     {
-        $user = User::where('email', 'student@mit.edu')->first();
+        $user = User::where('email', 'student@unilag.edu')->first();
 
         $response = $this->actingAs($user)->post('/logout');
 
@@ -99,11 +99,11 @@ class AuthenticationTest extends TestCase
 
     public function test_password_recovery_otp_flow_and_reset(): void
     {
-        $user = User::where('email', 'student@mit.edu')->first();
+        $user = User::where('email', 'student@unilag.edu')->first();
 
         // 1. Request recovery OTP
         $requestResponse = $this->post('/forgot-password', [
-            'email' => 'student@mit.edu',
+            'email' => 'student@unilag.edu',
         ]);
 
         $requestResponse->assertSessionHas('status');
@@ -117,7 +117,7 @@ class AuthenticationTest extends TestCase
 
         // 2. Submit OTP and new password complying with Password::min(8)->mixedCase()->numbers()
         $resetResponse = $this->post('/reset-password', [
-            'email' => 'student@mit.edu',
+            'email' => 'student@unilag.edu',
             'code' => $otp->code,
             'password' => 'NewSecurePassword2026!',
             'password_confirmation' => 'NewSecurePassword2026!',
@@ -136,7 +136,7 @@ class AuthenticationTest extends TestCase
     public function test_sanctum_api_login_and_2fa_verification(): void
     {
         $loginResponse = $this->postJson('/api/v1/auth/login', [
-            'email' => 'admin@mit.edu',
+            'email' => 'admin@unilag.edu',
             'password' => 'Headworld2026!',
         ]);
 
@@ -151,7 +151,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $challengeToken = $loginResponse->json('data.challenge_token');
-        $admin = User::where('email', 'admin@mit.edu')->first();
+        $admin = User::where('email', 'admin@unilag.edu')->first();
 
         $otp = UserOtp::where('user_id', $admin->id)
             ->where('type', UserOtp::TYPE_TWO_FACTOR)

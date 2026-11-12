@@ -53,9 +53,15 @@ class UserController extends Controller
         $totalAdmins = User::whereIn('role', ['admin', 'super_admin'])->count();
         $totalActive = User::where('status', 'active')->count();
 
+        $filters = array_filter([
+            'q' => $search ?: null,
+            'role' => ($role !== 'all') ? $role : null,
+            'status' => ($status !== 'all') ? $status : null,
+        ]);
+
         $users = $query->latest('id')
             ->paginate(15)
-            ->withQueryString();
+            ->appends($filters);
 
         $roles = Role::orderBy('name')->get();
 
@@ -180,7 +186,13 @@ class UserController extends Controller
 
         $action = ($user->status === 'active') ? 'reactivated' : 'suspended';
 
-        return redirect()->back()
+        $filters = array_filter([
+            'q' => request('q'),
+            'role' => (request('role') !== 'all') ? request('role') : null,
+            'status' => (request('status') !== 'all') ? request('status') : null,
+        ]);
+
+        return redirect()->route('admin.users.index', $filters)
             ->with('success', "Account for {$user->name} has been {$action}.");
     }
 }

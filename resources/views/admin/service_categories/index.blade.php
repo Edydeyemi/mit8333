@@ -304,7 +304,7 @@
     <div class="modal fade modal-headworld" id="editCategoryModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editCategoryForm" method="POST" action="">
+                <form id="editCategoryForm" method="POST" action="javascript:void(0);">
                     @csrf
                     @method('PUT')
                     <div class="modal-header">
@@ -355,6 +355,19 @@
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Clean up search parameters before submit
+            const searchForm = document.querySelector('form[action="{{ route("admin.categories.index") }}"]');
+            if (searchForm) {
+                searchForm.addEventListener("submit", function () {
+                    const inputs = this.querySelectorAll("input[name], select[name]");
+                    inputs.forEach(input => {
+                        if (!input.value || input.value === "all") {
+                            input.disabled = true;
+                        }
+                    });
+                });
+            }
+
             // Icon preset buttons helper
             document.querySelectorAll(".btn-icon-preset").forEach(btn => {
                 btn.addEventListener("click", function () {

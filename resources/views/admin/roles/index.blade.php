@@ -311,7 +311,7 @@
     <div class="modal fade modal-headworld" id="editRoleModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form id="editRoleForm" method="POST" action="">
+                <form id="editRoleForm" method="POST" action="javascript:void(0);">
                     @csrf
                     @method('PUT')
                     <div class="modal-header">
@@ -402,6 +402,19 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Clean up search parameters before submit
+            const searchForm = document.querySelector('form[action="{{ route("admin.roles.index") }}"]');
+            if (searchForm) {
+                searchForm.addEventListener("submit", function () {
+                    const inputs = this.querySelectorAll("input[name], select[name]");
+                    inputs.forEach(input => {
+                        if (!input.value) {
+                            input.disabled = true;
+                        }
+                    });
+                });
+            }
+
             const editModalEl = document.getElementById("editRoleModal");
             const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
 

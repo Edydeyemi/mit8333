@@ -22,6 +22,8 @@
 
 <body>
 
+    <div id="globalPageLoader" class="page-loader-progress"></div>
+
     <div class="auth-split-wrapper">
         <!-- Form Side -->
         <div class="auth-form-side">
@@ -79,7 +81,7 @@
                         </span>
                         <input type="email" name="email" id="emailInput"
                             class="form-control form-control-headworld border-start-0 @error('email') is-invalid @enderror"
-                            placeholder="name@mit.edu" value="{{ old('email') }}" required autofocus>
+                            placeholder="name@unilag.edu" value="{{ old('email') }}" required autofocus>
                     </div>
                     @error('email')
                         <div class="text-danger small mt-1">{{ $message }}</div>
@@ -99,8 +101,8 @@
                         <input type="password" name="password" id="passwordInput"
                             class="form-control form-control-headworld border-start-0 border-end-0 @error('password') is-invalid @enderror"
                             placeholder="••••••••" required>
-                        <button class="btn border-start-0 bg-white text-muted" type="button"
-                            id="togglePasswordBtn" aria-label="Toggle password visibility">
+                        <button class="btn border-start-0 bg-white text-muted" type="button" id="togglePasswordBtn"
+                            aria-label="Toggle password visibility">
                             <i class="bi bi-eye" id="togglePasswordIcon"></i>
                         </button>
                     </div>

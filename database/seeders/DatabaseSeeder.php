@@ -53,19 +53,40 @@ class DatabaseSeeder extends Seeder
         // 3. Assign Canonical Permissions to Roles
         $rolePermissionsMap = [
             'admin' => [
-                'users.manage', 'users.view', 'officers.add', 'officers.modify', 'officers.suspend',
-                'categories.manage', 'categories.view', 'roles.manage', 'roles.view',
-                'tasks.assign', 'tasks.reassign', 'tasks.cancel', 'tasks.report', 'tasks.view',
-                'reports.generate', 'reports.view', 'notifications.view',
+                'users.manage',
+                'users.view',
+                'officers.add',
+                'officers.modify',
+                'officers.suspend',
+                'categories.manage',
+                'categories.view',
+                'roles.manage',
+                'roles.view',
+                'tasks.assign',
+                'tasks.reassign',
+                'tasks.cancel',
+                'tasks.report',
+                'tasks.view',
+                'reports.generate',
+                'reports.view',
+                'notifications.view',
             ],
             'officer' => [
-                'tasks.view', 'tasks.update', 'notifications.view',
+                'tasks.view',
+                'tasks.update',
+                'notifications.view',
             ],
             'data_entry' => [
-                'tasks.report', 'reports.view', 'requests.create', 'notifications.view',
+                'tasks.report',
+                'reports.view',
+                'requests.create',
+                'notifications.view',
             ],
             'user' => [
-                'requests.create', 'requests.view', 'requests.cancel', 'notifications.view',
+                'requests.create',
+                'requests.view',
+                'requests.cancel',
+                'notifications.view',
             ],
         ];
 
@@ -139,9 +160,20 @@ class DatabaseSeeder extends Seeder
 
         $users = [
             [
+                'first_name' => 'Demo',
+                'last_name' => 'User',
+                'email' => 'user@in.com',
+                'mobile' => '+805551234567',
+                'password' => $defaultPassword,
+                'role' => 'user',
+                'status' => 'active',
+                'slug' => 'alexander-cole-' . Str::lower(Str::random(6)),
+                'email_verified_at' => now(),
+            ],
+            [
                 'first_name' => 'Alexander',
                 'last_name' => 'Cole',
-                'email' => 'student@mit.edu',
+                'email' => 'student@unilag.edu',
                 'mobile' => '+15551234567',
                 'password' => $defaultPassword,
                 'role' => 'user',
@@ -152,7 +184,7 @@ class DatabaseSeeder extends Seeder
             [
                 'first_name' => 'Eleanor',
                 'last_name' => 'Hughes',
-                'email' => 'staff@mit.edu',
+                'email' => 'staff@unilag.edu',
                 'mobile' => '+15551234568',
                 'password' => $defaultPassword,
                 'role' => 'user',
@@ -163,7 +195,7 @@ class DatabaseSeeder extends Seeder
             [
                 'first_name' => 'Marcus',
                 'last_name' => 'Vance',
-                'email' => 'officer@mit.edu',
+                'email' => 'officer@unilag.edu',
                 'mobile' => '+15551234569',
                 'password' => $defaultPassword,
                 'role' => 'officer',
@@ -174,7 +206,7 @@ class DatabaseSeeder extends Seeder
             [
                 'first_name' => 'Sterling',
                 'last_name' => 'Archer',
-                'email' => 'admin@mit.edu',
+                'email' => 'admin@in.com',
                 'mobile' => '+15551234570',
                 'password' => $defaultPassword,
                 'role' => 'super_admin',

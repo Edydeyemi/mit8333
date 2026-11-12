@@ -23,6 +23,9 @@
 
 <body>
 
+    <!-- Top-Edge Global Page Progress Loader -->
+    <div id="globalPageLoader" class="page-loader-progress"></div>
+
     <div class="sidebar-backdrop"></div>
 
     <div class="app-layout">
@@ -191,6 +194,7 @@
     <script src="{{ asset('assets/js/toast.js') }}"></script>
     <script src="{{ asset('assets/js/theme.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/password-helper.js') }}"></script>
 
     @stack('scripts')
 </body>

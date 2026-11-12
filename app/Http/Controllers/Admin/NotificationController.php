@@ -33,9 +33,13 @@ class NotificationController extends Controller
         $unreadCount = $user->unreadNotifications()->count();
         $readCount = $totalCount - $unreadCount;
 
+        $filters = array_filter([
+            'status' => ($status !== 'all') ? $status : null,
+        ]);
+
         $notifications = $query->latest()
             ->paginate(15)
-            ->withQueryString();
+            ->appends($filters);
 
         return view('admin.notifications.index', compact(
             'notifications',

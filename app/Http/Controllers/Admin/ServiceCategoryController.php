@@ -42,9 +42,14 @@ class ServiceCategoryController extends Controller
         $activeCount = ServiceCategory::where('is_active', true)->count();
         $inactiveCount = ServiceCategory::where('is_active', false)->count();
 
+        $filters = array_filter([
+            'q' => $search ?: null,
+            'status' => ($status !== 'all') ? $status : null,
+        ]);
+
         $categories = $query->latest('id')
             ->paginate(12)
-            ->withQueryString();
+            ->appends($filters);
 
         return view('admin.service_categories.index', compact(
             'categories',
@@ -102,7 +107,12 @@ class ServiceCategoryController extends Controller
 
         $statusLabel = $serviceCategory->is_active ? 'activated' : 'marked as inactive';
 
-        return redirect()->back()
+        $filters = array_filter([
+            'q' => request('q'),
+            'status' => (request('status') !== 'all') ? request('status') : null,
+        ]);
+
+        return redirect()->route('admin.categories.index', $filters)
             ->with('success', "Service category '{$serviceCategory->name}' has been {$statusLabel}.");
     }
 

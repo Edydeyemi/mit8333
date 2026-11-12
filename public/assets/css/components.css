@@ -1040,8 +1040,8 @@
   transition: all var(--transition-fast);
 }
 
-.input-group > .form-control-headworld,
-.input-group > .form-control.form-control-headworld {
+.input-group>.form-control-headworld,
+.input-group>.form-control.form-control-headworld {
   position: relative;
   flex: 1 1 auto;
   width: 1%;
@@ -1049,7 +1049,7 @@
   margin-bottom: 0;
 }
 
-.input-group > .input-group-text {
+.input-group>.input-group-text {
   background-color: var(--bg-surface);
   border: 1.5px solid var(--border-medium);
   border-radius: var(--radius-md);
@@ -1063,7 +1063,7 @@
   transition: all var(--transition-fast);
 }
 
-.input-group > .btn {
+.input-group>.btn {
   border: 1.5px solid var(--border-medium);
   border-radius: var(--radius-md);
   padding: 0.625rem 0.95rem;
@@ -1076,30 +1076,30 @@
   transition: all var(--transition-fast);
 }
 
-.input-group > .btn:hover {
+.input-group>.btn:hover {
   background-color: var(--navy-50);
   color: var(--navy-900);
   border-color: var(--border-medium);
 }
 
-.input-group > .btn:focus {
+.input-group>.btn:focus {
   outline: none;
   box-shadow: none;
 }
 
 /* Seamless joining of elements inside input-group */
-.input-group > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
+.input-group> :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
 
-.input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+.input-group> :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
   margin-left: -1px;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
 
-.input-group > .border-start-0 {
+.input-group>.border-start-0 {
   margin-left: 0 !important;
 }
 
@@ -1109,13 +1109,13 @@
   border-radius: var(--radius-md);
 }
 
-.input-group:focus-within > .form-control-headworld,
-.input-group:focus-within > .input-group-text,
-.input-group:focus-within > .btn {
+.input-group:focus-within>.form-control-headworld,
+.input-group:focus-within>.input-group-text,
+.input-group:focus-within>.btn {
   border-color: var(--gold-500) !important;
 }
 
-.input-group:focus-within > .form-control-headworld:focus {
+.input-group:focus-within>.form-control-headworld:focus {
   box-shadow: none !important;
 }
 
@@ -1135,11 +1135,260 @@
   box-shadow: none;
 }
 
-.input-group:has(.is-invalid) > .input-group-text,
-.input-group:has(.is-invalid) > .btn {
+.input-group:has(.is-invalid)>.input-group-text,
+.input-group:has(.is-invalid)>.btn {
   border-color: #dc3545 !important;
 }
 
 .input-group:has(.is-invalid):focus-within {
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.18) !important;
+}
+
+/* ==========================================================================
+   Password Validation, Generator & Strength Cues
+   ========================================================================== */
+.form-control-headworld.is-valid,
+.form-control-headworld.is-valid {
+  border-color: #198754 !important;
+}
+
+.form-control-headworld.is-valid:focus,
+.form-control-headworld.is-valid:focus {
+  border-color: #198754 !important;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.18) !important;
+}
+
+.input-group:has(.is-valid)>.input-group-text,
+.input-group:has(.is-valid)>.btn {
+  border-color: #198754 !important;
+}
+
+.btn-password-addon {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-medium);
+  color: var(--text-muted);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-password-addon:hover {
+  background: var(--bg-subtle, #f8f9fa);
+  color: var(--navy-900);
+  border-color: var(--gold-500);
+}
+
+.btn-generate-password {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-medium);
+  color: var(--navy-900);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm, 6px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-generate-password:hover {
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-500));
+  color: var(--navy-950);
+  border-color: var(--gold-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.password-strength-container {
+  margin-top: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.password-strength-bar-wrapper {
+  height: 4px;
+  background-color: var(--border-light, #e9ecef);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.password-strength-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 999px;
+}
+
+.strength-weak {
+  width: 25%;
+  background-color: #dc3545;
+}
+
+.strength-fair {
+  width: 50%;
+  background-color: #fd7e14;
+}
+
+.strength-good {
+  width: 75%;
+  background-color: #0d6efd;
+}
+
+.strength-strong {
+  width: 100%;
+  background-color: #198754;
+}
+
+.password-requirements-box {
+  background-color: var(--bg-subtle, #f8f9fa);
+  border: 1px solid var(--border-light, #e9ecef);
+  border-radius: var(--radius-md, 8px);
+  padding: 0.65rem 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.password-requirements-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.password-requirements-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.25rem 0.5rem;
+}
+
+.req-item {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color var(--transition-fast);
+}
+
+.req-item i {
+  font-size: 0.8rem;
+}
+
+.req-item.met {
+  color: #198754;
+  font-weight: 500;
+}
+
+.req-item.met i {
+  color: #198754;
+}
+
+.req-item.unmet {
+  color: #6c757d;
+}
+
+.password-match-box {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 20px;
+}
+
+.match-success {
+  color: #198754;
+  font-weight: 500;
+}
+
+.match-error {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Spinners, Loaders & Button Submission States
+   ========================================================================== */
+.spinner-gold {
+  color: var(--gold-500, #d4af37) !important;
+}
+
+.spinner-navy {
+  color: var(--navy-900, #0a192f) !important;
+}
+
+.btn-loading {
+  position: relative;
+  pointer-events: none !important;
+  opacity: 0.85 !important;
+  cursor: not-allowed !important;
+}
+
+.btn-loading .spinner-border {
+  margin-right: 0.4rem;
+  vertical-align: -0.125em;
+}
+
+/* Fixed Top-Edge Page Progress Loader */
+.page-loader-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3.5px;
+  background: linear-gradient(90deg, var(--gold-600, #b89628), var(--gold-400, #f3cf65), var(--gold-300, #ffe082));
+  z-index: 999999;
+  transition: width 0.25s ease-out, opacity 0.35s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.7);
+}
+
+.page-loader-progress.active {
+  opacity: 1;
+}
+
+/* Table & Card Overlay Loader */
+.table-loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  border-radius: inherit;
+  transition: opacity 0.25s ease;
+}
+
+[data-theme="dark"] .table-loader-overlay {
+  background: rgba(10, 25, 47, 0.85);
+}
+
+.table-loader-overlay .loader-caption {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy-900);
+  margin-top: 0.5rem;
+}
+
+[data-theme="dark"] .table-loader-overlay .loader-caption {
+  color: var(--text-main);
 }

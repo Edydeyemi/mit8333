@@ -14,6 +14,7 @@ const App = {
     this.setupThemeToggle();
     this.highlightActiveNav();
     this.setupNotifications();
+    this.setupFormLoaders();
   },
 
   setupSidebar() {
@@ -242,6 +243,140 @@ const App = {
           console.error(err);
         }
       });
+    });
+  },
+
+  // Central Spinners & Loaders Subsystem
+  Loader: {
+    progressBar: null,
+    progressInterval: null,
+
+    ensureProgressBar() {
+      if (!this.progressBar) {
+        let bar = document.getElementById("globalPageLoader");
+        if (!bar) {
+          bar = document.createElement("div");
+          bar.id = "globalPageLoader";
+          bar.className = "page-loader-progress";
+          document.body.prepend(bar);
+        }
+        this.progressBar = bar;
+      }
+      return this.progressBar;
+    },
+
+    startTopBar() {
+      const bar = this.ensureProgressBar();
+      clearInterval(this.progressInterval);
+      bar.classList.add("active");
+      bar.style.width = "20%";
+
+      let width = 20;
+      this.progressInterval = setInterval(() => {
+        if (width < 85) {
+          width += Math.random() * 12;
+          bar.style.width = `${Math.min(width, 85)}%`;
+        }
+      }, 200);
+    },
+
+    finishTopBar() {
+      const bar = this.ensureProgressBar();
+      clearInterval(this.progressInterval);
+      bar.style.width = "100%";
+      setTimeout(() => {
+        bar.classList.remove("active");
+        setTimeout(() => {
+          bar.style.width = "0%";
+        }, 300);
+      }, 250);
+    },
+
+    showButton(btn, loadingText = null) {
+      if (!btn || btn.classList.contains("btn-loading")) return;
+      btn.dataset.originalHtml = btn.innerHTML;
+      btn.classList.add("btn-loading");
+      btn.disabled = true;
+
+      const spinnerVariant = btn.classList.contains("btn-gold") ? "spinner-navy" : "spinner-border-sm";
+      const spinnerText = loadingText || btn.dataset.loadingText || "Processing...";
+      btn.innerHTML = `<span class="spinner-border ${spinnerVariant}" role="status" aria-hidden="true" style="width: 1rem; height: 1rem; margin-right: 0.35rem;"></span> ${spinnerText}`;
+    },
+
+    restoreButton(btn) {
+      if (!btn || !btn.classList.contains("btn-loading")) return;
+      if (btn.dataset.originalHtml) {
+        btn.innerHTML = btn.dataset.originalHtml;
+        delete btn.dataset.originalHtml;
+      }
+      btn.classList.remove("btn-loading");
+      btn.disabled = false;
+    },
+
+    showOverlay(target, caption = "Loading...") {
+      const el = typeof target === "string" ? document.querySelector(target) : target;
+      if (!el) return;
+      el.style.position = "relative";
+      let overlay = el.querySelector(".table-loader-overlay");
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.className = "table-loader-overlay";
+        overlay.innerHTML = `
+          <div class="spinner-border spinner-gold mb-2" role="status" style="width: 2rem; height: 2rem;"></div>
+          <div class="loader-caption">${caption}</div>
+        `;
+        el.appendChild(overlay);
+      }
+    },
+
+    hideOverlay(target) {
+      const el = typeof target === "string" ? document.querySelector(target) : target;
+      if (!el) return;
+      const overlay = el.querySelector(".table-loader-overlay");
+      if (overlay) overlay.remove();
+    }
+  },
+
+  setupFormLoaders() {
+    // Listen to form submit across the entire page
+    document.addEventListener("submit", (e) => {
+      const form = e.target;
+      if (!form || form.tagName !== "FORM" || form.hasAttribute("data-no-loader")) {
+        return;
+      }
+
+      // If submit was prevented by client validation, don't spin
+      if (e.defaultPrevented) {
+        return;
+      }
+
+      // Locate submit button (inside form or via form="formId")
+      let submitBtn = form.querySelector('button[type="submit"]:not([disabled])');
+      if (!submitBtn && form.id) {
+        submitBtn = document.querySelector(`button[type="submit"][form="${form.id}"]`);
+      }
+
+      if (submitBtn) {
+        this.Loader.showButton(submitBtn);
+      }
+      this.Loader.startTopBar();
+
+      // Check if subsequent event listeners cancel the submission
+      setTimeout(() => {
+        if (e.defaultPrevented && submitBtn) {
+          this.Loader.restoreButton(submitBtn);
+          this.Loader.finishTopBar();
+        }
+      }, 50);
+    });
+
+    // Support links or buttons with data-loader attribute
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-loader]");
+      if (btn && !btn.classList.contains("btn-loading")) {
+        this.Loader.showButton(btn);
+        this.Loader.startTopBar();
+      }
     });
   },
 

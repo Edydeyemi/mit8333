@@ -155,6 +155,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Service requests lodged by this user.
+     */
+    public function serviceRequests(): HasMany
+    {
+        return $this->hasMany(ServiceRequest::class, 'user_id');
+    }
+
+    /**
+     * Service tasks assigned to this officer.
+     */
+    public function assignedTasks(): HasMany
+    {
+        return $this->hasMany(ServiceRequest::class, 'assigned_officer_id');
+    }
+
+    /**
      * Check if user has a specific role.
      */
     public function hasRole(string $role): bool
@@ -181,6 +197,13 @@ class User extends Authenticatable
 
         foreach ($this->roles as $role) {
             if ($role->hasPermission($permissionName)) {
+                return true;
+            }
+        }
+
+        if (!empty($this->role)) {
+            $primaryRole = Role::where('role_slug', $this->role)->first();
+            if ($primaryRole && $primaryRole->hasPermission($permissionName)) {
                 return true;
             }
         }

@@ -99,7 +99,8 @@
 
         <!-- Filter Bar -->
         <div class="card-modern p-3 mb-4">
-            <form method="GET" action="{{ route('admin.users.index') }}" class="row g-2 align-items-center">
+            <form id="searchRecords" method="GET" action="{{ route('admin.users.index') }}"
+                class="row g-2 align-items-center">
                 <div class="col-md-5">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0 text-muted">
@@ -111,7 +112,8 @@
                 </div>
 
                 <div class="col-sm-6 col-md-3">
-                    <select name="role" class="form-select-headworld" onchange="this.form.submit()">
+                    <select name="role" class="form-select-headworld"
+                        onchange="document.getElementById('searchRecords').submit()">
                         <option value="all" {{ $role === 'all' ? 'selected' : '' }}>All Roles</option>
                         <option value="super_admin" {{ $role === 'super_admin' ? 'selected' : '' }}>Super Administrators
                         </option>
@@ -123,7 +125,8 @@
                 </div>
 
                 <div class="col-sm-6 col-md-2">
-                    <select name="status" class="form-select-headworld" onchange="this.form.submit()">
+                    <select name="status" class="form-select-headworld"
+                        onchange="document.getElementById('searchRecords').submit()">
                         <option value="all" {{ $status === 'all' ? 'selected' : '' }}>All Statuses</option>
                         <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="banned" {{ $status === 'banned' ? 'selected' : '' }}>Suspended</option>
@@ -132,7 +135,7 @@
                 </div>
 
                 <div class="col-md-2 d-flex justify-content-md-end gap-2">
-                    <button type="submit" class="btn btn-navy btn-sm px-3">
+                    <button type="submit" form="searchRecords" class="btn btn-navy btn-sm px-3">
                         <i class="bi bi-funnel"></i> Filter
                     </button>
                     @if($search || $role !== 'all' || $status !== 'all')
@@ -171,7 +174,8 @@
                                             <div>
                                                 <div class="fw-semibold text-navy-900">{{ $u->name }}</div>
                                                 <div class="small text-muted font-mono" style="font-size:0.75rem;">
-                                                    {{ $u->email }}</div>
+                                                    {{ $u->email }}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -227,10 +231,11 @@
 
                                             <!-- Suspend / Activate Toggle -->
                                             @if(auth()->id() !== $u->id && $u->role !== 'super_admin')
-                                                <form method="POST" action="{{ route('admin.users.toggle', $u) }}" class="d-inline">
+                                                <form id="setStatus_{{ $u->id }}" method="POST"
+                                                    action="{{ route('admin.users.toggle', $u) }}" class="d-inline">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit"
+                                                    <button type="submit" form="setStatus_{{ $u->id }}"
                                                         class="btn btn-sm py-1 px-2 {{ $u->status === 'active' ? 'btn-outline-danger' : 'btn-outline-success' }}"
                                                         title="{{ $u->status === 'active' ? 'Suspend User' : 'Activate User' }}">
                                                         <i
@@ -273,7 +278,7 @@
     <div class="modal fade modal-headworld" id="addUserModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form method="POST" action="{{ route('admin.users.store') }}">
+                <form id="addRecordForm" method="POST" action="{{ route('admin.users.store') }}">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold text-navy-900">
@@ -300,7 +305,7 @@
                                 <label class="form-label-headworld">University Email <span
                                         class="text-danger">*</span></label>
                                 <input type="email" name="email" class="form-control-headworld"
-                                    placeholder="e.g. m.vance@mit.edu" required value="{{ old('email') }}">
+                                    placeholder="e.g. m.vance@unilag.edu" required value="{{ old('email') }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-headworld">Contact Phone Number</label>
@@ -343,24 +348,73 @@
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label-headworld">Initial Password <span
-                                        class="text-danger">*</span></label>
-                                <input type="password" name="password" class="form-control-headworld"
-                                    placeholder="Min 8 chars, mixed case & numbers" required>
-                                <small class="text-muted" style="font-size: 0.72rem;">Must include uppercase, lowercase, and
-                                    numbers</small>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label-headworld mb-0">Initial Password <span
+                                            class="text-danger">*</span></label>
+                                    <button type="button" class="btn-generate-password" id="btnGenerateAddUserPassword"
+                                        title="Generate a cryptographically strong random password">
+                                        <i class="bi bi-magic text-warning"></i> Generate
+                                    </button>
+                                </div>
+                                <div class="input-group">
+                                    <input type="password" name="password" id="addUserPassword"
+                                        class="form-control-headworld" placeholder="Min 8 chars, mixed case & numbers"
+                                        required autocomplete="new-password">
+                                    <button type="button" class="btn btn-password-addon" id="btnToggleAddUserPassword"
+                                        aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Strength Meter -->
+                                <div class="password-strength-container">
+                                    <div class="password-strength-bar-wrapper">
+                                        <div id="addUserStrengthBar" class="password-strength-bar"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="small text-muted" style="font-size: 0.72rem;">Strength:</span>
+                                        <span id="addUserStrengthText" class="small font-mono text-muted">No password</span>
+                                    </div>
+                                </div>
+
+                                <!-- Requirements Box -->
+                                <div class="password-requirements-box" id="addUserPasswordReqs">
+                                    <div class="password-requirements-title">
+                                        <i class="bi bi-shield-check text-warning"></i> Policy Requirements
+                                    </div>
+                                    <ul class="password-requirements-list">
+                                        <li class="req-item unmet" data-rule="length"><i class="bi bi-circle"></i> 8+
+                                            characters</li>
+                                        <li class="req-item unmet" data-rule="upper"><i class="bi bi-circle"></i> Uppercase
+                                            (A-Z)</li>
+                                        <li class="req-item unmet" data-rule="lower"><i class="bi bi-circle"></i> Lowercase
+                                            (a-z)</li>
+                                        <li class="req-item unmet" data-rule="number"><i class="bi bi-circle"></i> Number
+                                            (0-9)</li>
+                                        <li class="req-item unmet" data-rule="symbol"><i class="bi bi-circle"></i> Special
+                                            symbol</li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-headworld">Confirm Password <span
+                                <label class="form-label-headworld mb-1">Confirm Password <span
                                         class="text-danger">*</span></label>
-                                <input type="password" name="password_confirmation" class="form-control-headworld"
-                                    placeholder="Repeat password" required>
+                                <div class="input-group">
+                                    <input type="password" name="password_confirmation" id="addUserConfirmPassword"
+                                        class="form-control-headworld" placeholder="Repeat password" required
+                                        autocomplete="new-password">
+                                    <button type="button" class="btn btn-password-addon" id="btnToggleAddUserConfirm"
+                                        aria-label="Toggle confirm password visibility">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
+                                </div>
+                                <div id="addUserMatchFeedback" class="password-match-box"></div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-gold">
+                        <button type="submit" form="addRecordForm" class="btn btn-gold">
                             <i class="bi bi-check-circle"></i> Provision Account
                         </button>
                     </div>
@@ -373,7 +427,7 @@
     <div class="modal fade modal-headworld" id="editUserModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form id="editUserForm" method="POST" action="">
+                <form id="editUserForm" method="POST" action="javascript:void(0);">
                     @csrf
                     @method('PUT')
                     <div class="modal-header">
@@ -432,24 +486,77 @@
                         </div>
 
                         <div class="p-3 bg-light rounded border mb-2">
-                            <label class="form-label-headworld mb-1 fw-bold">Reset Password (Optional)</label>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label-headworld mb-0 fw-bold">Reset Password (Optional)</label>
+                                <button type="button" class="btn-generate-password" id="btnGenerateEditUserPassword"
+                                    title="Generate a cryptographically strong random password">
+                                    <i class="bi bi-magic text-warning"></i> Generate
+                                </button>
+                            </div>
                             <small class="text-muted d-block mb-2">Leave password fields blank to keep the user's current
                                 password unchanged.</small>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <input type="password" name="password" class="form-control-headworld"
-                                        placeholder="New password (optional)">
+                                    <div class="input-group">
+                                        <input type="password" name="password" id="editUserPassword"
+                                            class="form-control-headworld" placeholder="New password (optional)"
+                                            autocomplete="new-password">
+                                        <button type="button" class="btn btn-password-addon" id="btnToggleEditUserPassword"
+                                            aria-label="Toggle password visibility">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Strength Meter -->
+                                    <div class="password-strength-container">
+                                        <div class="password-strength-bar-wrapper">
+                                            <div id="editUserStrengthBar" class="password-strength-bar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="small text-muted" style="font-size: 0.72rem;">Strength:</span>
+                                            <span id="editUserStrengthText" class="small font-mono text-muted">No
+                                                password</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Requirements Box -->
+                                    <div class="password-requirements-box" id="editUserPasswordReqs">
+                                        <div class="password-requirements-title">
+                                            <i class="bi bi-shield-check text-warning"></i> Policy Requirements
+                                        </div>
+                                        <ul class="password-requirements-list">
+                                            <li class="req-item unmet" data-rule="length"><i class="bi bi-circle"></i> 8+
+                                                characters</li>
+                                            <li class="req-item unmet" data-rule="upper"><i class="bi bi-circle"></i>
+                                                Uppercase (A-Z)</li>
+                                            <li class="req-item unmet" data-rule="lower"><i class="bi bi-circle"></i>
+                                                Lowercase (a-z)</li>
+                                            <li class="req-item unmet" data-rule="number"><i class="bi bi-circle"></i>
+                                                Number (0-9)</li>
+                                            <li class="req-item unmet" data-rule="symbol"><i class="bi bi-circle"></i>
+                                                Special symbol</li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="password" name="password_confirmation" class="form-control-headworld"
-                                        placeholder="Confirm new password">
+                                    <label class="form-label-headworld mb-1">Confirm New Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="password_confirmation" id="editUserConfirmPassword"
+                                            class="form-control-headworld" placeholder="Confirm new password"
+                                            autocomplete="new-password">
+                                        <button type="button" class="btn btn-password-addon" id="btnToggleEditUserConfirm"
+                                            aria-label="Toggle confirm password visibility">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
+                                    </div>
+                                    <div id="editUserMatchFeedback" class="password-match-box"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-navy">
+                        <button type="submit" form="editUserForm" class="btn btn-navy">
                             <i class="bi bi-check2-circle"></i> Update Personnel
                         </button>
                     </div>
@@ -462,6 +569,19 @@
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Clean up search parameters before submit to prevent empty keys (?q=&role=all) in the URL
+            const searchForm = document.getElementById("searchRecords");
+            if (searchForm) {
+                searchForm.addEventListener("submit", function () {
+                    const inputs = this.querySelectorAll("input[name], select[name]");
+                    inputs.forEach(input => {
+                        if (!input.value || input.value === "all") {
+                            input.disabled = true;
+                        }
+                    });
+                });
+            }
+
             const editModalEl = document.getElementById("editUserModal");
             const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
 
