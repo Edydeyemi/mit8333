@@ -1,0 +1,156 @@
+/**
+  * Headworld Campus Operations - MIT8333 CA Project
+  * Edward Babatunde aka Headworld
+  * Copyright 2026 Edward Babatunde
+  * License: MIT
+  
+ */
+
+:root {
+  /* Color Palette - Oxford Navy */
+  --navy-950: #080e1a;
+  --navy-900: #0f1d36;
+  --navy-850: #132442;
+  --navy-800: #192e52;
+  --navy-700: #223e6b;
+  --navy-600: #2e538f;
+  --navy-500: #3e6eb5;
+  --navy-100: #e8eef8;
+  --navy-50: #f2f6fc;
+
+  /* Color Palette - Regal Gold */
+  --gold-700: #936e13;
+  --gold-600: #b0861b;
+  --gold-500: #c59b27;
+  --gold-400: #dfb746;
+  --gold-300: #ebd07d;
+  --gold-200: #f6e6b5;
+  --gold-100: #fbf5df;
+  --gold-50: #fdfaf2;
+
+  /* Semantic Status Colors */
+  --status-pending-bg: #fffbeb;
+  --status-pending-text: #b45309;
+  --status-pending-border: #fcd34d;
+
+  --status-assigned-bg: #eff6ff;
+  --status-assigned-text: #1d4ed8;
+  --status-assigned-border: #93c5fd;
+
+  --status-progress-bg: #f0fdf4;
+  --status-progress-text: #15803d;
+  --status-progress-border: #86efac;
+
+  --status-hold-bg: #f5f3ff;
+  --status-hold-text: #6d28d9;
+  --status-hold-border: #c4b5fd;
+
+  --status-completed-bg: #ecfdf5;
+  --status-completed-text: #047857;
+  --status-completed-border: #6ee7b7;
+
+  --status-urgent-bg: #fef2f2;
+  --status-urgent-text: #b91c1c;
+  --status-urgent-border: #fca5a5;
+
+  /* Surfaces & Backgrounds - Light Theme (Default) */
+  --bg-body: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-muted: #f1f5f9;
+  --bg-hover: #e2e8f0;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  /* Typography Colors */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --border-subtle: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-accent: rgba(197, 155, 39, 0.4);
+
+  /* Elevation & Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 29, 54, 0.05);
+  --shadow-sm: 0 2px 4px 0 rgba(15, 29, 54, 0.06), 0 1px 2px -1px rgba(15, 29, 54, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 29, 54, 0.08), 0 2px 4px -2px rgba(15, 29, 54, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 29, 54, 0.09), 0 4px 6px -4px rgba(15, 29, 54, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 29, 54, 0.1), 0 8px 10px -6px rgba(15, 29, 54, 0.05);
+  --shadow-gold: 0 8px 24px -4px rgba(197, 155, 39, 0.25);
+  --shadow-navy: 0 12px 28px -6px rgba(15, 29, 54, 0.35);
+
+  /* Typography Scale */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout dimensions */
+  --sidebar-width: 270px;
+  --header-height: 70px;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --bg-body: #090e18;
+  --bg-surface: #0f1828;
+  --bg-card: #131e32;
+  --bg-muted: #18253d;
+  --bg-hover: #1e2f4c;
+  --bg-glass: rgba(15, 24, 40, 0.9);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #0f172a;
+
+  --border-subtle: #1e2e4a;
+  --border-medium: #2a3f65;
+  --border-strong: #3b578c;
+  --border-accent: rgba(223, 183, 70, 0.45);
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 18px -3px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 30px -5px rgba(0, 0, 0, 0.7);
+
+  --status-pending-bg: rgba(180, 83, 9, 0.2);
+  --status-pending-text: #fcd34d;
+  --status-pending-border: rgba(252, 211, 77, 0.4);
+
+  --status-assigned-bg: rgba(29, 78, 216, 0.2);
+  --status-assigned-text: #93c5fd;
+  --status-assigned-border: rgba(147, 197, 253, 0.4);
+
+  --status-progress-bg: rgba(21, 128, 61, 0.2);
+  --status-progress-text: #86efac;
+  --status-progress-border: rgba(134, 239, 172, 0.4);
+
+  --status-hold-bg: rgba(109, 40, 217, 0.2);
+  --status-hold-text: #c4b5fd;
+  --status-hold-border: rgba(196, 181, 253, 0.4);
+
+  --status-completed-bg: rgba(4, 120, 87, 0.2);
+  --status-completed-text: #6ee7b7;
+  --status-completed-border: rgba(110, 231, 183, 0.4);
+
+  --status-urgent-bg: rgba(185, 28, 28, 0.25);
+  --status-urgent-text: #fca5a5;
+  --status-urgent-border: rgba(252, 165, 165, 0.4);
+}

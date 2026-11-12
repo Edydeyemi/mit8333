@@ -1,0 +1,117 @@
+name: CI/CD Pipeline
+
+on:
+  # push:
+  #   branches: [ "main", "master", "dev" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run Tests (Laravel 13 & PHP 8.3)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, sqlite3, curl, zip, bcmath, fileinfo, gd
+          coverage: none
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Prepare Environment File
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Create SQLite Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Set Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Execute Tests via Pest / PHPUnit
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+        run: php artisan test
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/staging')) || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout Code from Repo
+        uses: actions/checkout@v4
+
+      - name: Archive Repository Artifact
+        uses: vimtor/action-zip@v1.2
+        with:
+          files: /
+          dest: mit8333_artefact.zip
+
+      - name: Copy Artifact via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "mit8333_artefact.zip"
+          target: "/home/noob/deployer/mit8333/"
+
+      - name: Deploy and Migrate via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            set -e
+            sudo apt-get update && sudo apt-get install -y zip unzip
+            cd /var/www/cicd_backup/mit8333
+
+            sudo zip -r backup_$(date "+%Y.%m.%d_%H%M%S").zip /var/www/mit8333 -x "/var/www/mit8333/node_modules/*" "/var/www/mit8333/storage/*" "/var/www/mit8333/vendor/*"
+            sudo mv /home/noob/deployer/mit8333/mit8333_artefact.zip /var/www/mit8333
+            cd /var/www/mit8333
+            sudo unzip -o mit8333_artefact.zip
+            sudo chown -R $USER:$USER /var/www/mit8333/
+            sudo rm mit8333_artefact.zip
+
+            composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+            php artisan migrate --force
+            php artisan optimize:clear
+            php artisan optimize
+
+            echo $(date) >> timestamp.txt
+
+            sudo chown -R www-data:www-data /var/www/mit8333/
