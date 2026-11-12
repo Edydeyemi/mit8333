@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.app')
 
 @section('title', 'Service Categories | ' . (getenv('APP_NAME') ?: 'Headworld'))
 
@@ -148,7 +148,7 @@
                                     </td>
                                     <td>
                                         <div class="fw-semibold text-navy-900">{{ $cat->name }}</div>
-                                        <span class="badge bg-light text-muted font-mono border"
+                                        <span class="badge bg-secondary text-muted font-mono border"
                                             style="font-size: 0.72rem;">{{ $cat->slug }}</span>
                                     </td>
                                     <td class="text-muted small" style="max-width: 320px;">

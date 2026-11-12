@@ -50,5 +50,21 @@ class ServiceRequestPolicy
             && $user->can('requests.cancel')
             && in_array($serviceRequest->status, ['submitted', 'assigned'], true);
     }
+
+    /**
+     * Determine whether the user can assign or reassign the service request.
+     */
+    public function assign(User $user, ServiceRequest $serviceRequest): bool
+    {
+        return $user->can('tasks.assign') || $user->can('tasks.reassign');
+    }
+
+    /**
+     * Determine whether the user can update the status of the service request.
+     */
+    public function updateStatus(User $user, ServiceRequest $serviceRequest): bool
+    {
+        return $serviceRequest->assigned_officer_id === $user->id && $user->can('tasks.update');
+    }
 }
 

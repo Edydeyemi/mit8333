@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.app')
 
 @section('title', 'User & Staff Directory | ' . (getenv('APP_NAME') ?: 'Headworld'))
 

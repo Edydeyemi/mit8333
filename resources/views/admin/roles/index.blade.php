@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.app')
 
 @section('title', 'Roles & Permissions | ' . (getenv('APP_NAME') ?: 'Headworld'))
 

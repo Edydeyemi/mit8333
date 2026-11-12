@@ -144,6 +144,14 @@ class ServiceRequest extends Model
     }
 
     /**
+     * All status progression updates history.
+     */
+    public function statusUpdates(): HasMany
+    {
+        return $this->hasMany(ServiceRequestStatusUpdate::class, 'service_request_id')->latest();
+    }
+
+    /**
      * Audit logs relationship.
      */
     public function auditLogs(): MorphMany
@@ -165,11 +173,11 @@ class ServiceRequest extends Model
     public function getPriorityBadgeClassAttribute(): string
     {
         return match ($this->priority) {
-            'emergency' => 'badge-danger',
-            'high' => 'badge-primary',
-            'medium' => 'badge-warning',
-            'low' => 'badge-info',
-            default => 'badge-secondary',
+            'emergency' => 'badge-priority priority-emergency',
+            'high' => 'badge-priority priority-high',
+            'medium' => 'badge-priority priority-medium',
+            'low' => 'badge-priority priority-low',
+            default => 'badge-priority priority-medium',
         };
     }
 
@@ -179,14 +187,14 @@ class ServiceRequest extends Model
     public function getStatusBadgeClassAttribute(): string
     {
         return match ($this->status) {
-            'submitted' => 'badge-secondary',
-            'assigned' => 'badge-info',
-            'in_progress' => 'badge-primary',
-            'on_hold' => 'badge-warning',
-            'resolved' => 'badge-success',
-            'cancelled' => 'badge-dark',
-            'rejected' => 'badge-danger',
-            default => 'badge-secondary',
+            'submitted' => 'badge-status badge-submitted',
+            'assigned' => 'badge-status badge-assigned',
+            'in_progress' => 'badge-status badge-in_progress',
+            'on_hold' => 'badge-status badge-on_hold',
+            'resolved' => 'badge-status badge-resolved',
+            'cancelled' => 'badge-status badge-cancelled',
+            'rejected' => 'badge-status badge-rejected',
+            default => 'badge-status badge-submitted',
         };
     }
 
@@ -216,6 +224,14 @@ class ServiceRequest extends Model
     }
 
     /**
+     * Scope query to requests assigned to a specific facility officer.
+     */
+    public function scopeForOfficer(Builder $query, int $officerId): Builder
+    {
+        return $query->where('assigned_officer_id', $officerId);
+    }
+
+    /**
      * Scope query to filter by search query, category, and status.
      */
     public function scopeFilter(Builder $query, array $filters): Builder
@@ -241,6 +257,10 @@ class ServiceRequest extends Model
 
         if (!empty($filters['priority']) && $filters['priority'] !== 'all') {
             $query->where('priority', $filters['priority']);
+        }
+
+        if (!empty($filters['building']) && $filters['building'] !== 'all') {
+            $query->where('building', $filters['building']);
         }
 
         return $query;

@@ -27,6 +27,7 @@ class ServiceRequestAttachment extends Model
      */
     protected $fillable = [
         'service_request_id',
+        'status_update_id',
         'file_path',
         'file_name',
         'file_type',
@@ -41,6 +42,14 @@ class ServiceRequestAttachment extends Model
     public function serviceRequest(): BelongsTo
     {
         return $this->belongsTo(ServiceRequest::class, 'service_request_id');
+    }
+
+    /**
+     * Associated status update relationship.
+     */
+    public function statusUpdate(): BelongsTo
+    {
+        return $this->belongsTo(ServiceRequestStatusUpdate::class, 'status_update_id');
     }
 
     /**

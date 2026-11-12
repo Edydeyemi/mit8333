@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
+use App\Http\Controllers\Admin\ServiceRequestController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,13 @@ Route::middleware(['auth'])->group(function (): void {
         Route::put('/{serviceCategory}', [ServiceCategoryController::class, 'update'])->name('update');
         Route::patch('/{serviceCategory}/toggle', [ServiceCategoryController::class, 'toggleStatus'])->name('toggle');
         Route::delete('/{serviceCategory}', [ServiceCategoryController::class, 'destroy'])->name('destroy');
+    });
+
+    // Campus Service Requests & Dispatch Command
+    Route::prefix('requests')->name('requests.')->group(function (): void {
+        Route::get('/', [ServiceRequestController::class, 'index'])->name('index');
+        Route::get('/{serviceRequest}', [ServiceRequestController::class, 'show'])->name('show');
+        Route::post('/{serviceRequest}/assign', [ServiceRequestController::class, 'assign'])->name('assign');
     });
 
     // Roles & Permissions Management

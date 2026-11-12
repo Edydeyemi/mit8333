@@ -33,7 +33,7 @@ class AuthenticationTest extends TestCase
     {
         $response = $this->post('/login', [
             'email' => 'student@unilag.edu',
-            'password' => 'Headworld2026!',
+            'password' => 'password',
         ]);
 
         $response->assertRedirect(route('login.2fa'));
@@ -136,8 +136,8 @@ class AuthenticationTest extends TestCase
     public function test_sanctum_api_login_and_2fa_verification(): void
     {
         $loginResponse = $this->postJson('/api/v1/auth/login', [
-            'email' => 'admin@unilag.edu',
-            'password' => 'Headworld2026!',
+            'email' => 'admin@in.com',
+            'password' => 'password',
         ]);
 
         $loginResponse->assertStatus(200);
@@ -151,7 +151,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $challengeToken = $loginResponse->json('data.challenge_token');
-        $admin = User::where('email', 'admin@unilag.edu')->first();
+        $admin = User::where('email', 'admin@in.com')->first();
 
         $otp = UserOtp::where('user_id', $admin->id)
             ->where('type', UserOtp::TYPE_TWO_FACTOR)

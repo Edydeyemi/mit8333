@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\ServiceRequest;
 use App\Models\ServiceRequestAttachment;
+use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -35,6 +36,35 @@ class AttachmentStorageService
             'file_type' => $file->getMimeType() ?: 'image/jpeg',
             'file_size' => $file->getSize() ?: 0,
             'type' => 'evidence',
+            'uploaded_by' => $uploader->id,
+        ]);
+    }
+
+    /**
+     * Store an attachment linked to a specific status progression update.
+     */
+    public function storeStatusAttachment(
+        UploadedFile $file,
+        ServiceRequest $request,
+        ServiceRequestStatusUpdate $update,
+        User $uploader,
+        string $type = 'evidence'
+    ): ServiceRequestAttachment {
+        $disk = $this->resolveDisk();
+        $folder = 'status_updates/' . date('Y/m');
+        $extension = $file->getClientOriginalExtension() ?: 'jpg';
+        $filename = Str::uuid()->toString() . '.' . $extension;
+
+        $path = $file->storeAs($folder, $filename, $disk);
+
+        return ServiceRequestAttachment::create([
+            'service_request_id' => $request->id,
+            'status_update_id' => $update->id,
+            'file_path' => $path,
+            'file_name' => $file->getClientOriginalName(),
+            'file_type' => $file->getMimeType() ?: 'image/jpeg',
+            'file_size' => $file->getSize() ?: 0,
+            'type' => $type,
             'uploaded_by' => $uploader->id,
         ]);
     }

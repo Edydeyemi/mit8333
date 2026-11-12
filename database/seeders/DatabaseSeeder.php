@@ -66,7 +66,6 @@ class DatabaseSeeder extends Seeder
                 'tasks.reassign',
                 'tasks.cancel',
                 'tasks.report',
-                'tasks.view',
                 'reports.generate',
                 'reports.view',
                 'notifications.view',

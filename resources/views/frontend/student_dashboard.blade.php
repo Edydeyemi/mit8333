@@ -138,7 +138,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-navy-900 border">
+                                        <span class="badge bg-secondary text-navy-900 border">
                                             <i class="bi {{ $req->category?->icon ?: 'bi-tools' }} me-1"></i>
                                             {{ $req->category?->name ?: 'General' }}
                                         </span>
@@ -154,13 +154,13 @@
                                         <div class="small fw-semibold text-dark">{{ $req->room_number }}</div>
                                     </td>
                                     <td>
-                                        <span class="badge {{ $req->priority_badge_class }}">
+                                        <span class="{{ $req->priority_badge_class }}">
                                             {{ ucfirst($req->priority) }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge {{ $req->status_badge_class }}">
-                                            {{ $req->status_label }}
+                                        <span class="{{ $req->status_badge_class }}">
+                                            <span class="status-dot"></span>{{ $req->status_label }}
                                         </span>
                                     </td>
                                     <td>
@@ -170,7 +170,7 @@
                                                 <span>{{ $req->assignedOfficer->name }}</span>
                                             </div>
                                         @else
-                                            <span class="badge bg-light text-muted border">Pending Dispatch</span>
+                                            <span class="badge bg-secondary text-muted border">Pending Dispatch</span>
                                         @endif
                                     </td>
                                     <td class="text-end">

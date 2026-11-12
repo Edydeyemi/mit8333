@@ -10,7 +10,8 @@
         <div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-navy-900 text-warning font-mono">{{ $serviceRequest->tracking_code }}</span>
-                <h5 class="fw-bold mb-0 text-navy-900 text-truncate" style="max-width: 400px;">{{ $serviceRequest->title }}</h5>
+                <h5 class="fw-bold mb-0 text-navy-900 text-truncate" style="max-width: 400px;">{{ $serviceRequest->title }}
+                </h5>
             </div>
             <small class="text-muted">Lodged {{ $serviceRequest->created_at->diffForHumans() }}</small>
         </div>
@@ -24,21 +25,23 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-light text-navy-900 border">
+                        <span class="badge bg-secondary text-navy-900 border">
                             <i class="bi {{ $serviceRequest->category?->icon ?: 'bi-tools' }} me-1"></i>
                             {{ $serviceRequest->category?->name ?: 'General' }}
                         </span>
-                        <span class="badge {{ $serviceRequest->priority_badge_class }}">
+                        <span class="{{ $serviceRequest->priority_badge_class }}">
                             <i class="bi bi-clock me-1"></i> {{ ucfirst($serviceRequest->priority) }} Priority
                         </span>
-                        <span class="badge {{ $serviceRequest->status_badge_class }}">
-                            {{ $serviceRequest->status_label }}
+                        <span class="{{ $serviceRequest->status_badge_class }}">
+                            <span class="status-dot"></span>{{ $serviceRequest->status_label }}
                         </span>
-                        <span class="text-muted small">&bull; Logged {{ $serviceRequest->created_at->format('M d, Y h:i A') }}</span>
+                        <span class="text-muted small">&bull; Logged
+                            {{ $serviceRequest->created_at->format('M d, Y h:i A') }}</span>
                     </div>
                     <h3 class="fw-bold text-navy-900 mb-1">{{ $serviceRequest->title }}</h3>
                     <p class="text-muted small mb-0 font-mono">
-                        System Reference: <strong>REQ-{{ str_pad((string)$serviceRequest->id, 5, '0', STR_PAD_LEFT) }}</strong>
+                        System Reference:
+                        <strong>REQ-{{ str_pad((string) $serviceRequest->id, 5, '0', STR_PAD_LEFT) }}</strong>
                         &bull; Tracking: <strong>{{ $serviceRequest->tracking_code }}</strong>
                     </p>
                 </div>
@@ -66,20 +69,23 @@
                     <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
                         <i class="bi bi-file-text-fill text-warning"></i> Incident Specification
                     </h5>
-                    <p class="text-main mb-4 lead fs-6" style="white-space: pre-line;">{{ $serviceRequest->description }}</p>
+                    <p class="text-main mb-4 lead fs-6" style="white-space: pre-line;">{{ $serviceRequest->description }}
+                    </p>
 
                     <div class="row g-3 p-3 rounded-3 bg-light border">
                         <div class="col-sm-6">
                             <span class="small text-muted d-block">Facility Location</span>
                             <strong class="text-navy-900 fs-6">{{ $serviceRequest->building }}</strong>
-                            <div class="small text-muted">{{ $serviceRequest->wing_floor }} &bull; {{ $serviceRequest->room_number }}</div>
+                            <div class="small text-muted">{{ $serviceRequest->wing_floor }} &bull;
+                                {{ $serviceRequest->room_number }}</div>
                         </div>
                         <div class="col-sm-6">
                             <span class="small text-muted d-block">Reported By</span>
                             <strong class="text-navy-900 fs-6">{{ $serviceRequest->user?->name }}</strong>
                             <div class="small text-muted">{{ $serviceRequest->user?->email }}</div>
                             @if ($serviceRequest->user?->mobile)
-                                <div class="small text-muted"><i class="bi bi-telephone me-1"></i>{{ $serviceRequest->user->mobile }}</div>
+                                <div class="small text-muted"><i
+                                        class="bi bi-telephone me-1"></i>{{ $serviceRequest->user->mobile }}</div>
                             @endif
                         </div>
                     </div>
@@ -88,7 +94,8 @@
                 <!-- Visual Evidence Gallery -->
                 <div class="card-modern p-4 mb-4">
                     <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                        <i class="bi bi-images text-warning"></i> Visual Evidence & Attachments ({{ $serviceRequest->evidencePhotos->count() }})
+                        <i class="bi bi-images text-warning"></i> Visual Evidence & Attachments
+                        ({{ $serviceRequest->evidencePhotos->count() }})
                     </h5>
 
                     @if ($serviceRequest->evidencePhotos->isNotEmpty())
@@ -100,12 +107,14 @@
                                             data-bs-toggle="modal" data-bs-target="#photoModal_{{ $photo->id }}">
                                             <img src="{{ $photo->url }}" alt="{{ $photo->file_name }}"
                                                 class="w-100 h-100 object-fit-cover">
-                                            <div class="position-absolute bottom-0 start-0 end-0 p-1 bg-dark bg-opacity-75 text-white small text-truncate px-2">
+                                            <div
+                                                class="position-absolute bottom-0 start-0 end-0 p-1 bg-dark bg-opacity-75 text-white small text-truncate px-2">
                                                 <i class="bi bi-zoom-in me-1"></i> Preview
                                             </div>
                                         </div>
                                         <div class="p-2 bg-light">
-                                            <div class="small fw-semibold text-truncate" title="{{ $photo->file_name }}">{{ $photo->file_name }}</div>
+                                            <div class="small fw-semibold text-truncate" title="{{ $photo->file_name }}">
+                                                {{ $photo->file_name }}</div>
                                             <div class="small text-muted">{{ $photo->formatted_size }}</div>
                                         </div>
                                     </div>
@@ -116,14 +125,18 @@
                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h6 class="modal-title fw-bold text-truncate">{{ $photo->file_name }} ({{ $photo->formatted_size }})</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <h6 class="modal-title fw-bold text-truncate">{{ $photo->file_name }}
+                                                    ({{ $photo->formatted_size }})</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body text-center p-0 bg-dark">
-                                                <img src="{{ $photo->url }}" alt="{{ $photo->file_name }}" class="img-fluid rounded" style="max-height: 75vh;">
+                                                <img src="{{ $photo->url }}" alt="{{ $photo->file_name }}" class="img-fluid rounded"
+                                                    style="max-height: 75vh;">
                                             </div>
                                             <div class="modal-footer justify-content-between">
-                                                <span class="small text-muted">Uploaded {{ $photo->created_at->format('M d, Y H:i') }}</span>
+                                                <span class="small text-muted">Uploaded
+                                                    {{ $photo->created_at->format('M d, Y H:i') }}</span>
                                                 <a href="{{ $photo->url }}" target="_blank" download class="btn btn-sm btn-subtle">
                                                     <i class="bi bi-download me-1"></i> Download Original
                                                 </a>
@@ -140,6 +153,81 @@
                         </div>
                     @endif
                 </div>
+
+                <!-- Technician Status Progression Updates -->
+                @if ($serviceRequest->statusUpdates->isNotEmpty())
+                    <div class="card-modern p-4 mb-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-warning"></i> Technician Progress Notes & Updates
+                            ({{ $serviceRequest->statusUpdates->count() }})
+                        </h5>
+
+                        <div class="d-flex flex-column gap-3">
+                            @foreach ($serviceRequest->statusUpdates as $update)
+                                <div class="p-3 rounded-3 bg-light border">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="{{ $update->status_badge_class }}">
+                                                <span class="status-dot"></span>{{ $update->status_label }}
+                                            </span>
+                                            @if ($update->previous_status)
+                                                <small class="text-muted">
+                                                    (Shifted from <span
+                                                        class="fw-semibold">{{ ucfirst(str_replace('_', ' ', $update->previous_status)) }}</span>)
+                                                </small>
+                                            @endif
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar-event me-1"></i>
+                                            {{ $update->created_at->format('M d, Y h:i A') }}
+                                        </small>
+                                    </div>
+
+                                    @if ($update->notes)
+                                        <p class="text-main mb-2 small" style="white-space: pre-line;">{{ $update->notes }}</p>
+                                    @endif
+
+                                    <div class="pt-2 border-top small text-muted">
+                                        <i class="bi bi-person-badge me-1"></i> Logged by:
+                                        <strong>{{ $update->user?->name ?: 'Maintenance Desk' }}</strong>
+                                    </div>
+
+                                    @if ($update->attachments->isNotEmpty())
+                                        <div class="mt-2 pt-2 border-top">
+                                            <span class="small fw-bold text-navy-900 d-block mb-1">
+                                                <i class="bi bi-paperclip me-1"></i> Update Attachments:
+                                            </span>
+                                            <div class="row g-2">
+                                                @foreach ($update->attachments as $att)
+                                                    <div class="col-6 col-sm-4 col-md-3">
+                                                        <div class="card border rounded p-1 shadow-sm text-center bg-white h-100">
+                                                            @if ($att->isImage())
+                                                                <a href="{{ $att->url }}" target="_blank">
+                                                                    <img src="{{ $att->url }}" alt="{{ $att->file_name }}"
+                                                                        class="img-fluid rounded"
+                                                                        style="height: 60px; object-fit: cover; width: 100%;">
+                                                                </a>
+                                                            @else
+                                                                <div class="py-2">
+                                                                    <i class="bi bi-file-earmark-text fs-4 text-primary"></i>
+                                                                </div>
+                                                            @endif
+                                                            <a href="{{ $att->url }}" target="_blank"
+                                                                class="small text-truncate d-block text-navy-900 fw-semibold mt-1 px-1"
+                                                                style="font-size:0.75rem;">
+                                                                {{ $att->file_name }}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Resolution / Cancellation Notice -->
                 @if ($serviceRequest->status === 'resolved')
@@ -185,7 +273,8 @@
 
                     @if ($serviceRequest->assignedOfficer)
                         <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border">
-                            <div class="user-avatar bg-navy-900 text-gold fw-bold" style="width: 48px; height: 48px; font-size: 1.1rem;">
+                            <div class="user-avatar bg-navy-900 text-gold fw-bold"
+                                style="width: 48px; height: 48px; font-size: 1.1rem;">
                                 {{ $serviceRequest->assignedOfficer->initials }}
                             </div>
                             <div class="flex-grow-1">
@@ -203,14 +292,16 @@
                         </div>
                         @if ($serviceRequest->assigned_at)
                             <div class="small text-muted mt-2 text-end">
-                                <i class="bi bi-calendar-check me-1"></i> Assigned {{ $serviceRequest->assigned_at->diffForHumans() }}
+                                <i class="bi bi-calendar-check me-1"></i> Assigned
+                                {{ $serviceRequest->assigned_at->diffForHumans() }}
                             </div>
                         @endif
                     @else
                         <div class="p-3 rounded-3 bg-light border text-center text-muted">
                             <i class="bi bi-hourglass-split fs-2 d-block text-warning mb-1"></i>
                             <div class="fw-bold text-navy-900 mb-1">Pending Technician Dispatch</div>
-                            <small>Your complaint is in the central dispatch queue. A specialist will be allocated according to SLA priority.</small>
+                            <small>Your complaint is in the central dispatch queue. A specialist will be allocated according to
+                                SLA priority.</small>
                         </div>
                     @endif
                 </div>
@@ -223,14 +314,16 @@
 
                     <div class="timeline-audit">
                         <!-- Step 1: Complaint Lodged -->
-                        <div class="timeline-item d-flex gap-3 pb-3 border-start border-2 ps-3 position-relative border-primary">
+                        <div
+                            class="timeline-item d-flex gap-3 pb-3 border-start border-2 ps-3 position-relative border-primary">
                             <div class="timeline-badge bg-primary text-white rounded-circle position-absolute"
                                 style="left: -12px; top: 0; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
                                 <i class="bi bi-check-lg"></i>
                             </div>
                             <div>
                                 <div class="fw-bold small text-navy-900">Incident Lodged</div>
-                                <div class="small text-muted">{{ $serviceRequest->created_at->format('M d, Y h:i A') }}</div>
+                                <div class="small text-muted">{{ $serviceRequest->created_at->format('M d, Y h:i A') }}
+                                </div>
                                 <div class="small text-muted">Ticket created by {{ $serviceRequest->user?->name }}</div>
                             </div>
                         </div>
@@ -239,15 +332,18 @@
                         @php
                             $step2Active = in_array($serviceRequest->status, ['assigned', 'in_progress', 'on_hold', 'resolved']);
                         @endphp
-                        <div class="timeline-item d-flex gap-3 pb-3 border-start border-2 ps-3 position-relative {{ $step2Active ? 'border-primary' : 'border-light' }}">
+                        <div
+                            class="timeline-item d-flex gap-3 pb-3 border-start border-2 ps-3 position-relative {{ $step2Active ? 'border-primary' : 'border-light' }}">
                             <div class="timeline-badge {{ $step2Active ? 'bg-primary text-white' : 'bg-light text-muted border' }} rounded-circle position-absolute"
                                 style="left: -12px; top: 0; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
                                 <i class="bi {{ $step2Active ? 'bi-check-lg' : 'bi-dash' }}"></i>
                             </div>
                             <div>
-                                <div class="fw-bold small {{ $step2Active ? 'text-navy-900' : 'text-muted' }}">Technician Assigned</div>
+                                <div class="fw-bold small {{ $step2Active ? 'text-navy-900' : 'text-muted' }}">Technician
+                                    Assigned</div>
                                 @if ($serviceRequest->assignedOfficer && $serviceRequest->assigned_at)
-                                    <div class="small text-muted">{{ $serviceRequest->assigned_at->format('M d, Y h:i A') }}</div>
+                                    <div class="small text-muted">{{ $serviceRequest->assigned_at->format('M d, Y h:i A') }}
+                                    </div>
                                     <div class="small text-muted">Assigned to {{ $serviceRequest->assignedOfficer->name }}</div>
                                 @else
                                     <div class="small text-muted">Pending officer allocation</div>
@@ -259,13 +355,15 @@
                         @php
                             $step3Active = in_array($serviceRequest->status, ['in_progress', 'on_hold', 'resolved']);
                         @endphp
-                        <div class="timeline-item d-flex gap-3 pb-3 border-start border-2 ps-3 position-relative {{ $step3Active ? 'border-primary' : 'border-light' }}">
+                        <div
+                            class="timeline-item d-flex gap-3 pb-3 border-start border-2 ps-3 position-relative {{ $step3Active ? 'border-primary' : 'border-light' }}">
                             <div class="timeline-badge {{ $step3Active ? 'bg-primary text-white' : 'bg-light text-muted border' }} rounded-circle position-absolute"
                                 style="left: -12px; top: 0; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
                                 <i class="bi {{ $step3Active ? 'bi-check-lg' : 'bi-dash' }}"></i>
                             </div>
                             <div>
-                                <div class="fw-bold small {{ $step3Active ? 'text-navy-900' : 'text-muted' }}">Field Work Underway</div>
+                                <div class="fw-bold small {{ $step3Active ? 'text-navy-900' : 'text-muted' }}">Field Work
+                                    Underway</div>
                                 @if ($serviceRequest->status === 'in_progress')
                                     <span class="badge bg-primary text-white small">Active on Site</span>
                                 @elseif ($serviceRequest->status === 'on_hold')
@@ -285,16 +383,20 @@
                         <div class="timeline-item d-flex gap-3 ps-3 position-relative">
                             <div class="timeline-badge {{ $step4Active ? 'bg-success text-white' : ($serviceRequest->status === 'cancelled' ? 'bg-dark text-white' : 'bg-light text-muted border') }} rounded-circle position-absolute"
                                 style="left: -12px; top: 0; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
-                                <i class="bi {{ $step4Active ? 'bi-check-lg' : ($serviceRequest->status === 'cancelled' ? 'bi-x' : 'bi-dash') }}"></i>
+                                <i
+                                    class="bi {{ $step4Active ? 'bi-check-lg' : ($serviceRequest->status === 'cancelled' ? 'bi-x' : 'bi-dash') }}"></i>
                             </div>
                             <div>
-                                <div class="fw-bold small {{ $step4Active ? 'text-success' : ($serviceRequest->status === 'cancelled' ? 'text-dark' : 'text-muted') }}">
+                                <div
+                                    class="fw-bold small {{ $step4Active ? 'text-success' : ($serviceRequest->status === 'cancelled' ? 'text-dark' : 'text-muted') }}">
                                     {{ $serviceRequest->status === 'cancelled' ? 'Request Cancelled' : 'Resolved & Inspected' }}
                                 </div>
                                 @if ($serviceRequest->resolved_at)
-                                    <div class="small text-muted">{{ $serviceRequest->resolved_at->format('M d, Y h:i A') }}</div>
+                                    <div class="small text-muted">{{ $serviceRequest->resolved_at->format('M d, Y h:i A') }}
+                                    </div>
                                 @elseif ($serviceRequest->cancelled_at)
-                                    <div class="small text-muted">{{ $serviceRequest->cancelled_at->format('M d, Y h:i A') }}</div>
+                                    <div class="small text-muted">{{ $serviceRequest->cancelled_at->format('M d, Y h:i A') }}
+                                    </div>
                                 @else
                                     <div class="small text-muted">Pending completion</div>
                                 @endif
@@ -329,7 +431,8 @@
 
     <!-- Cancel Request Confirmation Modal -->
     @if ($serviceRequest->canBeCancelledBy(auth()->user()))
-        <div class="modal fade" id="cancelTicketModal" tabindex="-1" aria-labelledby="cancelTicketModalLabel" aria-hidden="true">
+        <div class="modal fade" id="cancelTicketModal" tabindex="-1" aria-labelledby="cancelTicketModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <form action="{{ route('user.requests.cancel', $serviceRequest->slug) }}" method="POST">
@@ -346,8 +449,10 @@
                                 Once cancelled, technicians will stop work on this fault report.
                             </p>
                             <div class="mb-3">
-                                <label for="cancellationReasonInput" class="form-label-headworld small">Reason for cancellation (optional)</label>
-                                <textarea name="cancellation_reason" id="cancellationReasonInput" class="form-control-headworld" rows="3"
+                                <label for="cancellationReasonInput" class="form-label-headworld small">Reason for cancellation
+                                    (optional)</label>
+                                <textarea name="cancellation_reason" id="cancellationReasonInput" class="form-control-headworld"
+                                    rows="3"
                                     placeholder="e.g. Issue resolved itself, lodged duplicate ticket, moved rooms..."></textarea>
                             </div>
                         </div>

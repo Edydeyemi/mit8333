@@ -108,13 +108,13 @@
                                             {{ $req->tracking_code }}
                                         </a>
                                         @if ($req->attachments->isNotEmpty())
-                                            <span class="badge bg-light text-muted border ms-1" title="{{ $req->attachments->count() }} photo(s) attached">
+                                            <span class="badge bg-secondary text-muted border ms-1" title="{{ $req->attachments->count() }} photo(s) attached">
                                                 <i class="bi bi-paperclip"></i> {{ $req->attachments->count() }}
                                             </span>
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-navy-900 border">
+                                        <span class="badge bg-secondary text-navy-900 border">
                                             <i class="bi {{ $req->category?->icon ?: 'bi-tools' }} me-1"></i>
                                             {{ $req->category?->name ?: 'General' }}
                                         </span>
@@ -132,13 +132,13 @@
                                         <div class="small text-muted">{{ $req->wing_floor }} &bull; {{ $req->room_number }}</div>
                                     </td>
                                     <td>
-                                        <span class="badge {{ $req->priority_badge_class }}">
+                                        <span class="{{ $req->priority_badge_class }}">
                                             {{ ucfirst($req->priority) }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge {{ $req->status_badge_class }}">
-                                            {{ $req->status_label }}
+                                        <span class="{{ $req->status_badge_class }}">
+                                            <span class="status-dot"></span>{{ $req->status_label }}
                                         </span>
                                         @if ($req->assignedOfficer)
                                             <div class="small text-muted mt-1">

@@ -155,7 +155,14 @@ class ServiceRequestController extends Controller
     {
         Gate::authorize('view', $serviceRequest);
 
-        $serviceRequest->load(['category', 'attachments.uploader', 'assignedOfficer', 'user']);
+        $serviceRequest->load([
+            'category',
+            'attachments.uploader',
+            'assignedOfficer',
+            'user',
+            'statusUpdates.user',
+            'statusUpdates.attachments',
+        ]);
         $latestAudit = $serviceRequest->auditLogs()->first();
 
         return view('frontend.request_details', [

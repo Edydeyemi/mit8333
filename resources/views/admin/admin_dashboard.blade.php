@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.app')
 
 @section('title', 'Admin Dashboard | ' . getenv('APP_NAME'))
 
@@ -81,7 +81,7 @@
                             <i class="bi bi-graph-up text-warning"></i> 7-Day Incident Influx vs Resolution
                             Velocity
                         </h5>
-                        <span class="badge bg-light text-muted border">Daily Aggregation</span>
+                        <span class="badge bg-secondary text-muted border">Daily Aggregation</span>
                     </div>
                     <div style="height: 300px; position: relative;">
                         <canvas id="chartRequestsTrend"></canvas>

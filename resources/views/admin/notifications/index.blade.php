@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.app')
 
 @section('title', 'Notification Center | ' . (getenv('APP_NAME') ?: 'Headworld'))
 
@@ -89,7 +89,7 @@
                     </a>
                 </div>
 
-                <span class="badge bg-light text-navy-900 border p-2 small">
+                <span class="badge bg-secondary text-navy-900 border p-2 small">
                     Showing <strong>{{ $notifications->count() }}</strong> of {{ $notifications->total() }} alerts
                 </span>
             </div>
@@ -129,7 +129,7 @@
                             </div>
                             <p class="text-muted small mb-2">{{ $message }}</p>
                             <div class="d-flex flex-wrap align-items-center gap-2">
-                                <span class="badge bg-light text-muted border text-uppercase font-mono"
+                                <span class="badge bg-secondary text-muted border text-uppercase font-mono"
                                     style="font-size: 0.68rem;">
                                     {{ $category }}
                                 </span>
