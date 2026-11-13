@@ -65,6 +65,14 @@ class AuditLog extends Model
     }
 
     /**
+     * Alias for actor relationship.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->actor();
+    }
+
+    /**
      * Log a custom action.
      */
     public static function log(
