@@ -134,13 +134,11 @@
                 class="card-header-headworld p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div>
                     <h5 class="card-title-headworld mb-0 fw-bold text-navy-900">
-                        <i class="bi bi-shield-lock-fill text-warning me-1"></i> Immutable Audit Stream (Security &
-                        Integrity)
+                        <i class="bi bi-shield-lock-fill text-warning me-1"></i> Service Requests Audit Stream (Security & Integrity)
                     </h5>
-                    <small class="text-muted">Cryptographic event log recording all state mutations and actor
-                        signatures</small>
+                    <small class="text-muted">Cryptographic event log recording all ticket mutations, technician allocations, and status updates</small>
                 </div>
-                <span class="badge bg-light text-navy-900 border">Active Integrity Hash</span>
+                <span class="badge bg-light text-navy-900 border"><i class="bi bi-check2-circle text-success me-1"></i> Service Requests Only</span>
             </div>
 
             <!-- Audit Filters Form -->
@@ -166,12 +164,11 @@
                         <label class="form-label small fw-bold mb-1">Action Protocol</label>
                         <select name="action" class="form-select form-select-sm">
                             <option value="">All Actions</option>
-                            <option value="created" {{ ($filters['action'] ?? '') === 'created' ? 'selected' : '' }}>Created
-                            </option>
-                            <option value="updated" {{ ($filters['action'] ?? '') === 'updated' ? 'selected' : '' }}>Updated
-                            </option>
+                            <option value="created" {{ ($filters['action'] ?? '') === 'created' ? 'selected' : '' }}>Created</option>
+                            <option value="updated" {{ ($filters['action'] ?? '') === 'updated' ? 'selected' : '' }}>Updated</option>
                             <option value="status_updated" {{ ($filters['action'] ?? '') === 'status_updated' ? 'selected' : '' }}>Status Updated</option>
                             <option value="assigned_technician" {{ ($filters['action'] ?? '') === 'assigned_technician' ? 'selected' : '' }}>Assigned Technician</option>
+                            <option value="cancelled_request" {{ ($filters['action'] ?? '') === 'cancelled_request' ? 'selected' : '' }}>Cancelled Request</option>
                         </select>
                     </div>
                     <div class="col-md-2">

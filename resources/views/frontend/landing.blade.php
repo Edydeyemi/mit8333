@@ -48,29 +48,10 @@
     </div>
   </nav>
 
-  <!-- Live Campus Operations Status Ticker -->
-  <div class="status-ticker-bar bg-navy-950 py-2 border-bottom border-warning border-opacity-25"
-    style="margin-top: 76px;">
-    <div class="container">
-      <div class="d-flex align-items-center gap-3 overflow-hidden text-nowrap small text-white-50">
-        <span class="badge bg-warning text-dark fw-bold">
-          <span class="status-dot bg-dark"></span> LIVE CAMPUS TELEMETRY
-        </span>
-        <span>Queen's Hall Power Grid: <strong class="text-success">Optimal (100%)</strong></span>
-        <span>&bull;</span>
-        <span>Science Complex Cleanroom HVAC: <strong class="text-success">Regulated at 19&deg;C</strong></span>
-        <span>&bull;</span>
-        <span>Maxwell Theatres AV System: <strong class="text-info">Ready for Lectures</strong></span>
-        <span>&bull;</span>
-        <span>Campus Wi-Fi Core: <strong class="text-success">99.98% Uptime</strong></span>
-      </div>
-    </div>
-  </div>
-
   <!-- Hero Section -->
-  <section class="landing-hero py-5 text-white"
+  <section class="landing-hero py-5 text-white mt-4"
     style="background: linear-gradient(135deg, var(--navy-900, #0a192f), var(--navy-850, #112240));">
-    <div class="container position-relative py-4">
+    <div class="container position-relative py-4 mt-4">
       <div class="row align-items-center g-4">
         <div class="col-lg-8">
           <div class="badge bg-warning text-dark fw-bold mb-3 p-2 px-3 text-uppercase letter-spacing-1 rounded-pill">
@@ -148,26 +129,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Institutional Metrics -->
-      <div class="row g-3 text-center mt-5 pt-4 border-top border-white border-opacity-10">
-        <div class="col-6 col-md-3">
-          <h3 class="fw-bold text-warning mb-0">1.4h</h3>
-          <p class="text-white-50 small mb-0">Avg First Dispatch</p>
-        </div>
-        <div class="col-6 col-md-3">
-          <h3 class="fw-bold text-success mb-0">94.8%</h3>
-          <p class="text-white-50 small mb-0">SLA Compliance Rate</p>
-        </div>
-        <div class="col-6 col-md-3">
-          <h3 class="fw-bold text-info mb-0">6 Units</h3>
-          <p class="text-white-50 small mb-0">Specialized Engineering Crews</p>
-        </div>
-        <div class="col-6 col-md-3">
-          <h3 class="fw-bold text-white mb-0">100%</h3>
-          <p class="text-white-50 small mb-0">Immutable Audit Trail</p>
         </div>
       </div>
     </div>
@@ -264,7 +225,7 @@
   <!-- CTA Banner -->
   <section class="py-5 text-white position-relative" style="background: var(--navy-950, #030712);">
     <div class="container text-center py-4">
-      <h2 class="display-6 fw-bold mb-3">Ready to report a campus facility issue?</h2>
+      <h2 class="display-6 fw-bold text-white mb-3">Ready to report a campus facility issue?</h2>
       <p class="text-white-50 max-w-600 mx-auto mb-4">
         Sign in to your university portal account or register in under 60 seconds.
       </p>

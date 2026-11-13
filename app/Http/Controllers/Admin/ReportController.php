@@ -83,8 +83,9 @@ class ReportController extends Controller
             ->limit(5)
             ->get();
 
-        // 4. Immutable Audit Stream with Filtering
-        $auditQuery = AuditLog::with('user');
+        // 4. Immutable Audit Stream with Filtering (Service Requests Only)
+        $auditQuery = AuditLog::with('user')
+            ->where('auditable_type', ServiceRequest::class);
 
         if ($request->filled('action')) {
             $auditQuery->where('action', $request->input('action'));
@@ -149,11 +150,12 @@ class ReportController extends Controller
     }
 
     /**
-     * Export audit logs to Excel XLSX.
+     * Export audit logs to Excel XLSX (Service Requests Only).
      */
     public function exportAudits(Request $request): BinaryFileResponse
     {
         Gate::authorize('reports.view');
-        return $this->exportService->exportAuditLogs($request->all());
+        $filters = array_merge($request->all(), ['auditable_type' => ServiceRequest::class]);
+        return $this->exportService->exportAuditLogs($filters);
     }
 }

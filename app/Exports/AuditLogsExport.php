@@ -27,6 +27,10 @@ class AuditLogsExport implements FromQuery, WithHeadings, WithMapping, ShouldAut
     {
         $query = AuditLog::with('user');
 
+        if (!empty($this->filters['auditable_type'])) {
+            $query->where('auditable_type', $this->filters['auditable_type']);
+        }
+
         if (!empty($this->filters['action'])) {
             $query->where('action', $this->filters['action']);
         }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordModificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -76,6 +77,10 @@ Route::middleware('auth')->group(function () {
     // Password Modification (Authenticated)
     Route::post('/profile/password/send-otp', [PasswordModificationController::class, 'sendModificationOtp'])->name('profile.password.otp');
     Route::put('/profile/password', [PasswordModificationController::class, 'update'])->name('profile.password.update');
+
+    // Profile Photo Management
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::delete('/profile/avatar', [ProfileController::class, 'removeAvatar'])->name('profile.avatar.remove');
 
     // Central Active Notifications Endpoints
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

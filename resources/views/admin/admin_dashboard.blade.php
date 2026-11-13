@@ -145,14 +145,14 @@
                         </h5>
                         <span class="badge bg-secondary text-muted border">Live Stream</span>
                     </div>
-                    <div class="d-flex flex-column gap-3" id="adminAuditStream">
+                    <div class="d-flex flex-column gap-2 pe-1" id="adminAuditStream" style="max-height: 270px; overflow-y: auto;">
                         @forelse ($metrics['recentAudits'] as $audit)
-                            <div class="p-2 rounded-3 bg-light border small">
+                            <div class="p-2 py-1.5 rounded-2 bg-light border small">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <strong class="text-navy-900">{{ $audit['actor'] }}</strong>
-                                    <span class="text-muted font-mono" style="font-size:0.75rem;">{{ $audit['time_ago'] }}</span>
+                                    <strong class="text-navy-900" style="font-size: 0.82rem;">{{ $audit['actor'] }}</strong>
+                                    <span class="text-muted font-mono" style="font-size: 0.72rem;">{{ $audit['time_ago'] }}</span>
                                 </div>
-                                <div class="text-muted">{{ $audit['details'] }}</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.8rem;" title="{{ $audit['details'] }}">{{ $audit['details'] }}</div>
                             </div>
                         @empty
                             <div class="p-3 text-center text-muted small bg-light rounded-3">

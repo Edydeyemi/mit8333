@@ -86,12 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     streamContainer.innerHTML = audits.map(l => `
-      <div class="p-2 rounded-3 bg-light border small transition-all">
+      <div class="p-2 py-1.5 rounded-2 bg-light border small transition-all">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <strong class="text-navy-900">${l.actor || "System"}</strong>
-          <span class="text-muted font-mono" style="font-size:0.75rem;">${l.time_ago || "Just now"}</span>
+          <strong class="text-navy-900" style="font-size: 0.82rem;">${l.actor || "System"}</strong>
+          <span class="text-muted font-mono" style="font-size: 0.72rem;">${l.time_ago || "Just now"}</span>
         </div>
-        <div class="text-muted">${l.details || l.action}</div>
+        <div class="text-muted text-truncate" style="font-size: 0.8rem;" title="${l.details || l.action}">${l.details || l.action}</div>
       </div>
     `).join("");
   };

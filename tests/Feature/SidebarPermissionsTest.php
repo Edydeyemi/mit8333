@@ -77,7 +77,7 @@ class SidebarPermissionsTest extends TestCase
         $response->assertSee('My Overview');
         $response->assertSee('Submit Request');
         $response->assertSee('My Request History');
-        $response->assertSee('Lodge Incident');
+        $response->assertSee('Update Profile Photo');
 
         // Forbidden links for regular students
         $response->assertDontSee('Operations Command');

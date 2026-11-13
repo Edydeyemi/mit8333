@@ -15,6 +15,7 @@ const App = {
     this.highlightActiveNav();
     this.setupNotifications();
     this.setupFormLoaders();
+    this.setupProfileModals();
   },
 
   setupSidebar() {
@@ -426,6 +427,175 @@ const App = {
     if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
     if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
     return `${Math.floor(diffSec / 86400)}d ago`;
+  },
+
+  setupProfileModals() {
+    // 1. Avatar File Preview
+    const avatarInput = document.getElementById("avatarFileInput");
+    const previewImg = document.getElementById("avatarPreviewImg");
+    const previewFallback = document.getElementById("avatarPreviewFallback");
+
+    if (avatarInput) {
+      avatarInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (re) => {
+            if (previewImg) {
+              previewImg.src = re.target.result;
+              previewImg.classList.remove("d-none");
+            }
+            if (previewFallback) {
+              previewFallback.classList.add("d-none");
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // 2. Avatar Upload Submit
+    const avatarForm = document.getElementById("avatarUploadForm");
+    const avatarAlert = document.getElementById("avatarUploadAlert");
+    const btnSubmitAvatar = document.getElementById("btnSubmitAvatar");
+
+    if (avatarForm) {
+      avatarForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(avatarForm);
+        if (avatarAlert) avatarAlert.classList.add("d-none");
+        if (btnSubmitAvatar) {
+          btnSubmitAvatar.disabled = true;
+          btnSubmitAvatar.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';
+        }
+
+        try {
+          const res = await fetch(avatarForm.action, {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "X-CSRF-TOKEN": this.csrfToken,
+              "Accept": "application/json"
+            },
+            body: formData
+          });
+
+          const data = await res.json();
+          if (res.ok && data.status === "success") {
+            document.querySelectorAll("#headerUserAvatarImg, #dropdownUserAvatarImg, #sidebarUserAvatarImg").forEach(img => {
+              img.src = data.avatar_url;
+              img.classList.remove("d-none");
+            });
+            document.querySelectorAll("#headerUserAvatarFallback, #dropdownUserAvatarFallback, #sidebarUserAvatarFallback").forEach(fb => {
+              fb.classList.add("d-none");
+            });
+
+            const modalEl = document.getElementById("avatarUpdateModal");
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            Toast.success("Profile Photo", data.message || "Avatar updated successfully.");
+          } else {
+            const err = data.message || (data.errors ? Object.values(data.errors).flat().join(" ") : "Failed to upload avatar.");
+            if (avatarAlert) {
+              avatarAlert.textContent = err;
+              avatarAlert.classList.remove("d-none");
+            }
+          }
+        } catch (err) {
+          if (avatarAlert) {
+            avatarAlert.textContent = "Network error while uploading avatar.";
+            avatarAlert.classList.remove("d-none");
+          }
+        } finally {
+          if (btnSubmitAvatar) {
+            btnSubmitAvatar.disabled = false;
+            btnSubmitAvatar.innerHTML = '<i class="bi bi-upload me-1"></i> Save Photo';
+          }
+        }
+      });
+    }
+
+    // 3. Remove Avatar Button
+    const btnRemoveAvatar = document.getElementById("btnRemoveAvatar");
+    if (btnRemoveAvatar) {
+      btnRemoveAvatar.addEventListener("click", async () => {
+        if (!confirm("Remove your current profile photo?")) return;
+        try {
+          const res = await fetch("/profile/avatar", {
+            method: "DELETE",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "X-CSRF-TOKEN": this.csrfToken,
+              "Accept": "application/json"
+            }
+          });
+          const data = await res.json();
+          if (res.ok) {
+            location.reload();
+          }
+        } catch (e) {
+          Toast.error("Error", "Failed to remove avatar.");
+        }
+      });
+    }
+
+    // 4. Header Change Password Submit
+    const pwForm = document.getElementById("headerChangePasswordForm");
+    const pwAlert = document.getElementById("changePasswordAlert");
+    const btnSubmitPw = document.getElementById("btnSubmitPasswordChange");
+
+    if (pwForm) {
+      pwForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (pwAlert) pwAlert.classList.add("d-none");
+        if (btnSubmitPw) {
+          btnSubmitPw.disabled = true;
+          btnSubmitPw.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
+        }
+
+        const formData = new FormData(pwForm);
+        const payload = Object.fromEntries(formData.entries());
+
+        try {
+          const res = await fetch(pwForm.action, {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "X-CSRF-TOKEN": this.csrfToken,
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+          if (res.ok && data.status === "success") {
+            pwForm.reset();
+            const modalEl = document.getElementById("changePasswordModal");
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            Toast.success("Security Updated", data.message || "Password changed successfully.");
+          } else {
+            const err = data.message || (data.errors ? Object.values(data.errors).flat().join(" ") : "Failed to change password.");
+            if (pwAlert) {
+              pwAlert.textContent = err;
+              pwAlert.classList.remove("d-none");
+            }
+          }
+        } catch (err) {
+          if (pwAlert) {
+            pwAlert.textContent = "Network error while changing password.";
+            pwAlert.classList.remove("d-none");
+          }
+        } finally {
+          if (btnSubmitPw) {
+            btnSubmitPw.disabled = false;
+            btnSubmitPw.innerHTML = '<i class="bi bi-check-lg me-1"></i> Update Password';
+          }
+        }
+      });
+    }
   }
 };
 

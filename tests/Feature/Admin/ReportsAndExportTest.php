@@ -41,7 +41,38 @@ class ReportsAndExportTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Operational Compliance & Audit Intelligence', false);
         $response->assertSee('Campus Facility Performance Digest');
-        $response->assertSee('Immutable Audit Stream');
+        $response->assertSee('Service Requests Audit Stream');
+    }
+
+    public function test_reports_audit_stream_displays_only_service_request_audits(): void
+    {
+        $this->actingAs($this->superAdmin);
+
+        // 1. Audit on a User model (should be excluded)
+        AuditLog::create([
+            'auditable_type' => User::class,
+            'auditable_id' => $this->student->id,
+            'action' => 'user_login_event',
+            'actor_id' => $this->student->id,
+            'actor_name' => 'Student Tester',
+            'changes' => ['details' => 'USER_AUDIT_MARKER_SHOULD_BE_HIDDEN'],
+        ]);
+
+        // 2. Audit on a ServiceRequest model (should be included)
+        AuditLog::create([
+            'auditable_type' => ServiceRequest::class,
+            'auditable_id' => 99999,
+            'action' => 'status_updated',
+            'actor_id' => $this->superAdmin->id,
+            'actor_name' => 'Dean Sterling',
+            'changes' => ['details' => 'TICKET_AUDIT_MARKER_SHOULD_BE_VISIBLE'],
+        ]);
+
+        $response = $this->get(route('admin.reports.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('TICKET_AUDIT_MARKER_SHOULD_BE_VISIBLE');
+        $response->assertDontSee('USER_AUDIT_MARKER_SHOULD_BE_HIDDEN');
     }
 
     public function test_unauthorized_user_cannot_access_reports(): void

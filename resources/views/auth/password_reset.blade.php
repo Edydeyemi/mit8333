@@ -9,7 +9,7 @@
     <!-- Bootstrap 5 CSS Foundation -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="{{ asset('assets/font/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Custom Design Tokens & Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/variables.css') }}">

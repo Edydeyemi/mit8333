@@ -175,10 +175,17 @@
 
             <div class="sidebar-footer">
                 <div class="user-sidebar-card mb-3">
-                    <div class="user-avatar user-sidebar-avatar bg-navy-900 text-gold fw-bold"
-                        style="background-color: var(--navy-900, #0a192f); color: var(--gold-500, #d4af37);">
-                        {{ $currentUser?->initials ?: 'U' }}
-                    </div>
+                    @if ($currentUser?->profile_photo_url)
+                        <img src="{{ $currentUser->profile_photo_url }}" alt="{{ $currentUser->name }}"
+                            class="user-avatar user-sidebar-avatar rounded-circle object-fit-cover shadow-xs border"
+                            id="sidebarUserAvatarImg" style="width: 40px; height: 40px;">
+                    @else
+                        <div class="user-avatar user-sidebar-avatar bg-navy-900 text-gold fw-bold"
+                            style="background-color: var(--navy-900, #0a192f); color: var(--gold-500, #d4af37);"
+                            id="sidebarUserAvatarFallback">
+                            {{ $currentUser?->initials ?: 'U' }}
+                        </div>
+                    @endif
                     <div class="user-sidebar-info">
                         <div class="user-sidebar-name">{{ $currentUser?->name ?: 'Campus User' }}</div>
                         <div class="user-sidebar-role text-capitalize">
@@ -268,23 +275,74 @@
                         <i class="bi bi-moon-stars-fill"></i>
                     </button>
 
-                    <!-- Contextual Quick Action Button -->
-                    @if ($currentUser?->can('users.manage'))
-                        <a href="{{ route('admin.users.index') }}"
-                            class="btn btn-gold btn-sm d-inline-flex align-items-center gap-1">
-                            <i class="bi bi-person-gear"></i> Personnel
-                        </a>
-                    @elseif ($currentUser?->can('tasks.view'))
-                        <a href="{{ route('facility.tasks.index') }}"
-                            class="btn btn-gold btn-sm d-inline-flex align-items-center gap-1">
-                            <i class="bi bi-kanban"></i> Field Pipeline
-                        </a>
-                    @elseif ($currentUser?->can('requests.create'))
-                        <a href="{{ route('user.requests.create') }}"
-                            class="btn btn-gold btn-sm d-inline-flex align-items-center gap-1">
-                            <i class="bi bi-plus-lg"></i> Lodge Incident
-                        </a>
-                    @endif
+                    <!-- User Profile Avatar & Actions Dropdown -->
+                    <div class="dropdown" id="headerUserDropdown">
+                        <button type="button" class="btn btn-subtle p-0 rounded-circle border-0 d-flex align-items-center"
+                            id="userDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User account menu"
+                            style="width: 38px; height: 38px;">
+                            @if ($currentUser?->profile_photo_url)
+                                <img src="{{ $currentUser->profile_photo_url }}" alt="{{ $currentUser->name }}"
+                                    class="rounded-circle object-fit-cover shadow-xs border border-2 border-warning"
+                                    style="width: 38px; height: 38px;" id="headerUserAvatarImg">
+                            @else
+                                <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center shadow-xs border border-2 border-warning fw-bold text-gold"
+                                    style="width: 38px; height: 38px; background-color: var(--navy-900, #0a192f); color: var(--gold-500, #d4af37); font-size: 0.85rem;"
+                                    id="headerUserAvatarFallback">
+                                    {{ $currentUser?->initials ?: 'U' }}
+                                </div>
+                            @endif
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0"
+                            style="width: 280px; border-radius: 12px; overflow: hidden;"
+                            aria-labelledby="userDropdownBtn">
+                            <!-- Dropdown Header -->
+                            <div class="p-3 bg-light border-bottom d-flex align-items-center gap-3">
+                                @if ($currentUser?->profile_photo_url)
+                                    <img src="{{ $currentUser->profile_photo_url }}" alt="{{ $currentUser->name }}"
+                                        class="rounded-circle object-fit-cover shadow-xs border"
+                                        style="width: 44px; height: 44px;" id="dropdownUserAvatarImg">
+                                @else
+                                    <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center shadow-xs fw-bold text-gold"
+                                        style="width: 44px; height: 44px; background-color: var(--navy-900, #0a192f); color: var(--gold-500, #d4af37);"
+                                        id="dropdownUserAvatarFallback">
+                                        {{ $currentUser?->initials ?: 'U' }}
+                                    </div>
+                                @endif
+                                <div class="overflow-hidden">
+                                    <h6 class="fw-bold mb-0 text-navy-900 text-truncate">{{ $currentUser?->name }}</h6>
+                                    <div class="small text-muted text-truncate font-mono" style="font-size: 0.75rem;">{{ $currentUser?->email }}</div>
+                                    <span class="badge bg-secondary font-mono mt-1 text-uppercase" style="font-size: 0.65rem;">
+                                        {{ str_replace('_', ' ', $currentUser?->role ?: 'user') }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Actions Menu -->
+                            <div class="p-2">
+                                <button type="button" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold"
+                                    data-bs-toggle="modal" data-bs-target="#avatarUpdateModal">
+                                    <i class="bi bi-camera-fill text-warning fs-6"></i>
+                                    <span>Update Profile Photo</span>
+                                </button>
+                                <button type="button" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold"
+                                    data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    <i class="bi bi-key-fill text-primary fs-6"></i>
+                                    <span>Change Password</span>
+                                </button>
+                            </div>
+
+                            <div class="border-top p-2 bg-light">
+                                <form method="POST" action="{{ route('logout') }}" id="headerLogoutForm">
+                                    @csrf
+                                    <button type="submit"
+                                        class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold text-danger">
+                                        <i class="bi bi-box-arrow-right fs-6"></i>
+                                        <span>Sign Out</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -306,6 +364,111 @@
                 </div>
             </footer>
         </main>
+    </div>
+
+    <!-- Modal: Update Profile Photo -->
+    <div class="modal fade" id="avatarUpdateModal" tabindex="-1" aria-labelledby="avatarUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-light border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-navy-900 fs-6" id="avatarUpdateModalLabel">
+                        <i class="bi bi-camera-fill text-warning me-2"></i> Update Profile Picture
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="avatarUploadForm" method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4 text-center">
+                        <div class="position-relative d-inline-block mb-3">
+                            @if ($currentUser?->profile_photo_url)
+                                <img src="{{ $currentUser->profile_photo_url }}" id="avatarPreviewImg"
+                                    class="rounded-circle object-fit-cover shadow border border-3 border-warning"
+                                    style="width: 100px; height: 100px;" alt="Avatar Preview">
+                                <div id="avatarPreviewFallback"
+                                    class="user-avatar rounded-circle d-none align-items-center justify-content-center shadow border border-3 border-warning fw-bold text-gold mx-auto"
+                                    style="width: 100px; height: 100px; font-size: 2rem; background-color: var(--navy-900, #0a192f);">
+                                    {{ $currentUser?->initials ?: 'U' }}
+                                </div>
+                            @else
+                                <div id="avatarPreviewFallback"
+                                    class="user-avatar rounded-circle d-flex align-items-center justify-content-center shadow border border-3 border-warning fw-bold text-gold mx-auto"
+                                    style="width: 100px; height: 100px; font-size: 2rem; background-color: var(--navy-900, #0a192f);">
+                                    {{ $currentUser?->initials ?: 'U' }}
+                                </div>
+                                <img src="" id="avatarPreviewImg" class="rounded-circle object-fit-cover shadow border border-3 border-warning d-none"
+                                    style="width: 100px; height: 100px;" alt="Avatar Preview">
+                            @endif
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <label for="avatarFileInput" class="form-label small fw-bold text-navy-900">Choose Image File</label>
+                            <input class="form-control form-control-sm" type="file" id="avatarFileInput" name="avatar" accept="image/jpeg,image/png,image/jpg,image/webp" required>
+                            <div class="form-text small" style="font-size: 0.75rem;">Supported formats: JPG, PNG, WEBP. Max size: 5MB.</div>
+                        </div>
+
+                        <div id="avatarUploadAlert" class="alert alert-danger py-2 small d-none text-start mb-0"></div>
+                    </div>
+                    <div class="modal-footer bg-light p-3 d-flex justify-content-between">
+                        @if ($currentUser?->profile_photo)
+                            <button type="button" class="btn btn-sm btn-outline-danger" id="btnRemoveAvatar">
+                                <i class="bi bi-trash"></i> Remove
+                            </button>
+                        @else
+                            <div></div>
+                        @endif
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-subtle" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-sm btn-gold fw-semibold" id="btnSubmitAvatar">
+                                <i class="bi bi-upload me-1"></i> Save Photo
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Change Password -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-light border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-navy-900 fs-6" id="changePasswordModalLabel">
+                        <i class="bi bi-shield-lock-fill text-primary me-2"></i> Change Account Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="headerChangePasswordForm" method="POST" action="{{ route('profile.password.update') }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body p-4">
+                        <div id="changePasswordAlert" class="alert alert-danger py-2 small d-none mb-3"></div>
+
+                        <div class="mb-3">
+                            <label for="headerCurrentPassword" class="form-label small fw-bold text-navy-900">Current Password</label>
+                            <input type="password" class="form-control form-control-sm" id="headerCurrentPassword" name="current_password" required autocomplete="current-password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="headerNewPassword" class="form-label small fw-bold text-navy-900">New Password</label>
+                            <input type="password" class="form-control form-control-sm" id="headerNewPassword" name="password" required autocomplete="new-password">
+                            <div class="form-text small" style="font-size: 0.72rem;">Minimum 8 characters with mixed case letters and numbers.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="headerConfirmPassword" class="form-label small fw-bold text-navy-900">Confirm New Password</label>
+                            <input type="password" class="form-control form-control-sm" id="headerConfirmPassword" name="password_confirmation" required autocomplete="new-password">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-sm btn-subtle" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-navy fw-semibold" id="btnSubmitPasswordChange">
+                            <i class="bi bi-check-lg me-1"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
