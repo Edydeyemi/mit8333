@@ -28,8 +28,25 @@ Route::get('/', function () {
         };
     }
 
-    return redirect()->route('login');
-});
+    return view('frontend.landing');
+})->name('landing');
+
+// API Documentation & Schema Routes
+Route::get('/docs', function () {
+    return view('docs.api_docs');
+})->name('api.docs');
+
+Route::get('/docs/openapi.yaml', function () {
+    return response()->file(base_path('docs/openapi.yaml'), [
+        'Content-Type' => 'text/yaml',
+    ]);
+})->name('api.docs.openapi');
+
+Route::get('/docs/postman_collection.json', function () {
+    return response()->file(base_path('docs/postman_collection.json'), [
+        'Content-Type' => 'application/json',
+    ]);
+})->name('api.docs.postman');
 
 // Guest Authentication Routes
 Route::middleware('guest')->group(function () {

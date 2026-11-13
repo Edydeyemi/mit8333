@@ -191,7 +191,7 @@
                                             onclick="openUpdateModal('{{ $task->slug }}', '{{ $task->tracking_code }}', 'resolved', 'Inspected fault location, replaced worn components, verified nominal operation, and performed safety tests.')">
                                             Resolve
                                         </button>
-                                        <a href="{{ route('facility.tasks.show', $task->slug) }}" class="btn btn-sm btn-veritas py-1 px-2" title="Inspect details">
+                                        <a href="{{ route('facility.tasks.show', $task->slug) }}" class="btn btn-sm btn-headworld py-1 px-2" title="Inspect details">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     </td>

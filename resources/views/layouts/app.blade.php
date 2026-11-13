@@ -102,6 +102,14 @@
                         </a>
                     @endcan
 
+                    @can('reports.view')
+                        <a href="{{ route('admin.reports.index') }}"
+                            class="nav-link-custom {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                            <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                            <span>Analytics & Audit</span>
+                        </a>
+                    @endcan
+
                     @canany(['reports.view', 'tasks.assign'])
                         <a href="{{ route('admin.notifications.index') }}"
                             class="nav-link-custom {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">

@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Facility;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Facility\UpdateTaskStatusRequest;
+use App\Mail\RequestStatusUpdatedNotificationMail;
+use App\Mail\TaskCompletedNotificationMail;
 use App\Models\AuditLog;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
@@ -19,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class FacilityTaskController extends Controller
 {
@@ -170,6 +173,15 @@ class FacilityTaskController extends Controller
                         url: route('user.requests.show', $serviceRequest->slug),
                         icon: ($newStatus === 'resolved') ? 'bi-check2-circle' : 'bi-arrow-repeat'
                     ));
+
+                    // Queue transactional email
+                    if ($serviceRequest->user->email) {
+                        if ($newStatus === 'resolved') {
+                            Mail::to($serviceRequest->user->email)->queue(new TaskCompletedNotificationMail($serviceRequest, $serviceRequest->user, $notes));
+                        } else {
+                            Mail::to($serviceRequest->user->email)->queue(new RequestStatusUpdatedNotificationMail($serviceRequest, $serviceRequest->user, $previousStatus, $newStatus, $notes));
+                        }
+                    }
                 }
             });
 

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreServiceRequestRequest;
+use App\Mail\RequestSubmittedNotificationMail;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
 use App\Models\User;
@@ -18,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ServiceRequestController extends Controller
 {
@@ -117,8 +119,12 @@ class ServiceRequestController extends Controller
                 return $serviceRequest;
             });
 
-            // Notify campus administrators of the new incident report
+            // Notify campus administrators & requester with queued emails and in-app alerts
             try {
+                if ($user->email) {
+                    Mail::to($user->email)->queue(new RequestSubmittedNotificationMail($serviceRequest, $user, false));
+                }
+
                 $admins = User::whereIn('role', ['admin', 'super_admin'])->get();
                 foreach ($admins as $admin) {
                     $admin->notify(new SystemAlertNotification(
@@ -128,9 +134,13 @@ class ServiceRequestController extends Controller
                         url: url("/admin/requests/{$serviceRequest->slug}"),
                         icon: 'bi-exclamation-triangle-fill'
                     ));
+
+                    if ($admin->email) {
+                        Mail::to($admin->email)->queue(new RequestSubmittedNotificationMail($serviceRequest, $admin, true));
+                    }
                 }
             } catch (\Throwable $e) {
-                Log::warning('Failed to dispatch admin notification for service request: ' . $e->getMessage());
+                Log::warning('Failed to dispatch notifications for service request: ' . $e->getMessage());
             }
 
             return redirect()

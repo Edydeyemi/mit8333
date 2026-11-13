@@ -3,8 +3,17 @@
 @section('title', 'Resident Overview | ' . (getenv('APP_NAME') ?: 'Headworld'))
 
 @section('header_title')
-    <h5 class="fw-bold mb-0 text-navy-900">Campus Resident Portal</h5>
-    <small class="text-muted">{{ date('l, F j, Y') }}</small>
+    <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2">
+        <div>
+            <h5 class="fw-bold mb-0 text-navy-900">Campus Resident Portal</h5>
+            <small class="text-muted">{{ date('l, F j, Y') }} &bull; Maintenance & Fault Logging Desk</small>
+        </div>
+        <div id="userSyncBadge">
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 d-inline-flex align-items-center gap-1">
+                <span class="status-dot bg-success"></span> Live Syncing
+            </span>
+        </div>
+    </div>
 @endsection
 
 @section('content')
@@ -14,8 +23,7 @@
             style="background: linear-gradient(135deg, var(--navy-900), var(--navy-850)); color: #ffffff;">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <span class="badge bg-warning text-dark fw-bold mb-2 text-uppercase letter-spacing-1">Facility
-                        Concierge</span>
+                    <span class="badge bg-warning text-dark fw-bold mb-2 text-uppercase letter-spacing-1">Facility Concierge</span>
                     <h2 class="fw-bold mb-2 text-white">Welcome back, {{ $user->first_name ?: 'Resident' }}</h2>
                     <p class="text-white-50 mb-3 max-w-600">
                         Notice an electrical fault, plumbing leak, damaged furniture, or classroom equipment issue? Lodge
@@ -33,7 +41,7 @@
                 <div class="col-lg-4 d-none d-lg-flex justify-content-end">
                     <div class="text-center p-3 rounded-4 border border-warning border-opacity-25"
                         style="background: rgba(8, 14, 26, 0.4); min-width: 200px;">
-                        <div class="display-6 fw-bold text-warning">{{ $activeTickets }}</div>
+                        <div class="display-6 fw-bold text-warning" id="userActiveTicketsBanner">{{ $activeTickets }}</div>
                         <div class="small text-white-50 text-uppercase letter-spacing-1">Active Tickets</div>
                     </div>
                 </div>
@@ -50,7 +58,7 @@
                             <i class="bi bi-clipboard2-data"></i>
                         </div>
                     </div>
-                    <div class="stat-card-value">{{ $totalLogged }}</div>
+                    <div class="stat-card-value" id="userKpiTotal">{{ $totalLogged }}</div>
                     <div class="stat-card-trend">
                         <span>All-time submitted complaints</span>
                     </div>
@@ -65,7 +73,7 @@
                             <i class="bi bi-gear-wide-connected"></i>
                         </div>
                     </div>
-                    <div class="stat-card-value">{{ $inProgress }}</div>
+                    <div class="stat-card-value" id="userKpiInProgress">{{ $inProgress }}</div>
                     <div class="stat-card-trend">
                         <span class="trend-up"><i class="bi bi-clock"></i> Active with technicians</span>
                     </div>
@@ -80,7 +88,7 @@
                             <i class="bi bi-check2-circle"></i>
                         </div>
                     </div>
-                    <div class="stat-card-value">{{ $resolved }}</div>
+                    <div class="stat-card-value text-success" id="userKpiResolved">{{ $resolved }}</div>
                     <div class="stat-card-trend">
                         <span class="text-success"><i class="bi bi-shield-check"></i> Sign-off verified</span>
                     </div>
@@ -95,9 +103,42 @@
                             <i class="bi bi-exclamation-triangle-fill"></i>
                         </div>
                     </div>
-                    <div class="stat-card-value">{{ $emergencyCount }}</div>
+                    <div class="stat-card-value text-danger" id="userKpiEmergency">{{ $emergencyCount }}</div>
                     <div class="stat-card-trend">
                         <span class="text-danger">Target SLA: &lt; 4 Hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart.js Visualizations Row -->
+        <div class="row g-4 mb-4">
+            <!-- Doughnut Chart: Status Distribution -->
+            <div class="col-lg-5">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-navy-900 d-flex align-items-center gap-2">
+                            <i class="bi bi-pie-chart text-warning"></i> My Requests Status Breakdown
+                        </h5>
+                        <span class="badge bg-secondary text-navy-900 border font-mono">Overview</span>
+                    </div>
+                    <div style="height: 270px; position: relative;">
+                        <canvas id="chartUserStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bar Chart: Category Distribution -->
+            <div class="col-lg-7">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-navy-900 d-flex align-items-center gap-2">
+                            <i class="bi bi-bar-chart-fill text-warning"></i> Requests by Facility Category
+                        </h5>
+                        <span class="badge bg-secondary text-muted border">Categorized</span>
+                    </div>
+                    <div style="height: 270px; position: relative;">
+                        <canvas id="chartUserCategories"></canvas>
                     </div>
                 </div>
             </div>
@@ -128,7 +169,7 @@
                                 <th class="text-end">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="studentActiveRequestsTbody">
                             @forelse ($recentRequests as $req)
                                 <tr>
                                     <td>
@@ -261,3 +302,15 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <!-- Server-Side Hydrated Payload for User Dashboard -->
+    <script type="application/json" id="userDashboardPayload" data-poll-url="{{ route('user.dashboard.data') }}">
+        {!! json_encode($metrics) !!}
+    </script>
+
+    <!-- Chart.js v4 CDN & Modular Dashboard Controllers -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="{{ asset('assets/js/dashboard-charts.js') }}"></script>
+    <script src="{{ asset('assets/js/user-dashboard.js') }}"></script>
+@endpush
