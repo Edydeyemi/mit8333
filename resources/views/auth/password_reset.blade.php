@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Recovery | Headworld Campus Operations</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Bootstrap 5 CSS Foundation -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -26,12 +30,9 @@
         <div class="auth-form-side">
             <div class="mb-4">
                 <a href="{{ url('/') }}"
-                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3">
-                    <div class="brand-crest">H</div>
-                    <div>
-                        <div class="brand-title text-dark">HEADWORLD</div>
-                        <div class="brand-subtitle text-warning">CAMPUS OPERATIONS</div>
-                    </div>
+                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3"
+                    aria-label="HeadWorld Campus Operations">
+                    <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 46px; max-width: 270px;">
                 </a>
                 <h2 class="fw-bold text-navy-900 mt-1">Account Recovery</h2>
                 <p class="text-muted small">

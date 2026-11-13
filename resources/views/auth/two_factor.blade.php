@@ -7,6 +7,10 @@
     <meta name="description" content="Two-Factor Authentication (2FA) verification for Headworld Campus Operations.">
     <title>Two-Factor Authentication | Headworld Campus Operations</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Bootstrap 5 CSS Foundation -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -26,12 +30,9 @@
         <div class="auth-form-side">
             <div class="mb-4">
                 <a href="{{ url('/') }}"
-                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3">
-                    <div class="brand-crest">H</div>
-                    <div>
-                        <div class="brand-title text-dark">HEADWORLD</div>
-                        <div class="brand-subtitle text-warning">CAMPUS OPERATIONS</div>
-                    </div>
+                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3"
+                    aria-label="HeadWorld Campus Operations">
+                    <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 46px; max-width: 270px;">
                 </a>
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <span class="badge bg-warning text-dark fw-bold px-2 py-1 small text-uppercase">
@@ -148,7 +149,7 @@
 
             <div class="bg-dark bg-opacity-50 p-4 rounded-4 backdrop-blur border border-white border-opacity-10">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="brand-crest" style="width:45px; height:45px; font-size:1.4rem;">H</div>
+                    <img src="{{ asset('assets/images/logo-mark.svg') }}" alt="HeadWorld Crest" class="brand-logo-mark" style="width: 48px; height: 48px;">
                     <div>
                         <div class="text-white fw-bold">Enterprise Campus Care</div>
                         <div class="small text-warning">ISO 27001 Identity Safeguard</div>

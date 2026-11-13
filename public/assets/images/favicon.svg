@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
+  <defs>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <linearGradient id="favNavy" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f1d36" />
+      <stop offset="100%" stop-color="#040811" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Crest -->
+  <path d="M 32 3 C 48 3, 58 9, 60 22 C 61 39, 48 53, 32 61 C 16 53, 3 39, 4 22 C 6 9, 16 3, 32 3 Z" 
+        fill="url(#favNavy)" stroke="url(#favGold)" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- Pediment / Roof Apex -->
+  <path d="M 32 9 L 48 18 L 16 18 Z" fill="url(#favGold)" />
+
+  <!-- Bold H Pillar Columns -->
+  <!-- Left Pillar -->
+  <rect x="18" y="21" width="7" height="26" rx="1.5" fill="url(#favGold)" />
+  <!-- Right Pillar -->
+  <rect x="39" y="21" width="7" height="26" rx="1.5" fill="url(#favGold)" />
+  <!-- H Crossbar -->
+  <rect x="23" y="31" width="18" height="6" rx="1" fill="url(#favGold)" />
+
+  <!-- Central Gear Core / Spark -->
+  <circle cx="32" cy="34" r="5" fill="#0f1d36" stroke="url(#favGold)" stroke-width="1.5" />
+  <circle cx="32" cy="34" r="2" fill="#ffffff" />
+
+  <!-- Plinth Base -->
+  <rect x="14" y="49" width="36" height="3" rx="1" fill="url(#favGold)" />
+</svg>

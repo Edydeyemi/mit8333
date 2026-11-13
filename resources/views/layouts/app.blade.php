@@ -7,6 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', (getenv('APP_NAME') ?: 'Headworld') . ' | Campus Operations')</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Bootstrap 5 CSS Foundation -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -46,8 +50,8 @@
         <!-- Sidebar Navigation -->
         <aside class="app-sidebar">
             <div class="sidebar-header">
-                <a href="{{ $brandRoute }}" class="brand-logo">
-                    <div class="brand-crest">V</div>
+                <a href="{{ $brandRoute }}" class="brand-logo" aria-label="HeadWorld Campus Operations">
+                    <img src="{{ asset('assets/images/logo-mark.svg') }}" alt="HeadWorld Crest" class="brand-logo-mark">
                     <div>
                         <div class="brand-title">HEADWORLD</div>
                         <div class="brand-subtitle">{{ $brandSubtitle }}</div>
@@ -206,10 +210,14 @@
         <!-- Main Content Area -->
         <main class="app-main">
             <header class="app-header">
-                <div class="header-left">
+                <div class="header-left d-flex align-items-center gap-2">
                     <button type="button" class="header-toggle-btn" aria-label="Toggle Sidebar">
                         <i class="bi bi-list"></i>
                     </button>
+                    <!-- Mobile / Tablet Brand Mark Header Shortcut -->
+                    <a href="{{ $brandRoute }}" class="d-flex align-items-center text-decoration-none me-2 d-lg-none" aria-label="HeadWorld Home">
+                        <img src="{{ asset('assets/images/logo-mark.svg') }}" alt="HeadWorld Crest" style="height: 32px; width: 32px;" class="brand-logo-mark">
+                    </a>
                     @hasSection('header_title')
                         @yield('header_title')
                     @else

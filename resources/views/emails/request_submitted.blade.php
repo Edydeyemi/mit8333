@@ -30,8 +30,7 @@
     <div class="wrapper">
         <div class="container">
             <div class="header">
-                <div class="brand-crest">V</div>
-                <div class="brand-title">HEADWORLD OPERATIONS</div>
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="HeadWorld Facility Management" style="height: 44px; max-width: 240px; margin-bottom: 6px;">
                 <div class="brand-subtitle">CAMPUS FACILITY MANAGEMENT</div>
             </div>
 

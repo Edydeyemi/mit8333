@@ -8,6 +8,10 @@
     content="Headworld Campus Operations - High-performance digital maintenance and facility service request platform for university students, faculty, and engineering staff.">
   <title>Headworld Campus Operations | University Facility & Maintenance Hub</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
+  <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
   <!-- Bootstrap 5 CSS Foundation -->
   <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Bootstrap Icons -->
@@ -25,12 +29,8 @@
   <!-- Landing Top Navigation -->
   <nav class="landing-nav bg-white border-bottom py-3">
     <div class="container d-flex align-items-center justify-content-between">
-      <a href="{{ url('/') }}" class="brand-logo text-decoration-none">
-        <div class="brand-crest">V</div>
-        <div>
-          <div class="brand-title">HEADWORLD</div>
-          <div class="brand-subtitle">CAMPUS OPERATIONS</div>
-        </div>
+      <a href="{{ url('/') }}" class="brand-logo text-decoration-none" aria-label="HeadWorld Campus Operations">
+        <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 44px; max-width: 260px;">
       </a>
 
       <div class="d-flex align-items-center gap-2 gap-sm-3">
@@ -244,8 +244,7 @@
   <footer class="app-footer border-top bg-white py-4">
     <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
       <div class="d-flex align-items-center gap-2">
-        <div class="brand-crest"
-          style="width:28px; height:28px; font-size:0.9rem; line-height: 28px; text-align: center;">V</div>
+        <img src="{{ asset('assets/images/logo-mark.svg') }}" alt="HeadWorld Crest" style="width:28px; height:28px;" class="brand-logo-mark">
         <span class="fw-bold text-navy-900">Headworld Campus Operations</span> &copy; 2026 Headworld University
         Facilities.
       </div>
