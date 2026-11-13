@@ -8,6 +8,7 @@ use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class ServiceCategory extends Model
@@ -32,6 +33,15 @@ class ServiceCategory extends Model
         'icon',
         'description',
         'is_active',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'sla_hours',
     ];
 
     /**
@@ -75,6 +85,30 @@ class ServiceCategory extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * Service requests filed under this category.
+     */
+    public function requests(): HasMany
+    {
+        return $this->hasMany(ServiceRequest::class, 'service_category_id');
+    }
+
+    /**
+     * Virtual SLA resolution hours accessor.
+     */
+    public function getSlaHoursAttribute(): int
+    {
+        return match ($this->slug) {
+            'plumbing-water' => 12,
+            'electrical-lighting' => 24,
+            'classroom-equipment' => 24,
+            'damaged-furniture' => 48,
+            'internet-problems' => 24,
+            'hostel-maintenance' => 36,
+            default => 24,
+        };
     }
 
     /**

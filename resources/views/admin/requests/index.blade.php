@@ -142,11 +142,16 @@
 
         <!-- Master Requests Table -->
         <div class="card-modern">
-            <div class="card-header-headworld d-flex justify-content-between align-items-center p-3 border-bottom">
+            <div class="card-header-headworld d-flex justify-content-between align-items-center p-3 border-bottom flex-wrap gap-2">
                 <h5 class="card-title-headworld mb-0 fw-bold">
                     <i class="bi bi-list-check text-warning me-1"></i> Campus Service Requests ({{ $requests->total() }})
                 </h5>
-                <span class="badge bg-secondary text-muted border">Showing Page {{ $requests->currentPage() }} of {{ $requests->lastPage() }}</span>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('admin.reports.export.requests', request()->all()) }}" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export XLSX
+                    </a>
+                    <span class="badge bg-secondary text-muted border">Page {{ $requests->currentPage() }} of {{ $requests->lastPage() }}</span>
+                </div>
             </div>
 
             <div class="card-body-headworld p-0">
