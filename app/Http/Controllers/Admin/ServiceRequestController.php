@@ -73,7 +73,7 @@ class ServiceRequestController extends Controller
             'resolved' => ServiceRequest::where('status', 'resolved')->count(),
         ];
 
-        return view('admin.requests.index', [
+        return view('admin.requests.submitted_requests', [
             'requests' => $requests,
             'categories' => $categories,
             'officers' => $officers,
@@ -109,7 +109,7 @@ class ServiceRequestController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        return view('admin.requests.show', [
+        return view('admin.requests.request_details', [
             'serviceRequest' => $serviceRequest,
             'officers' => $officers,
         ]);

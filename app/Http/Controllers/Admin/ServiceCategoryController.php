@@ -51,7 +51,7 @@ class ServiceCategoryController extends Controller
             ->paginate(12)
             ->appends($filters);
 
-        return view('admin.service_categories.index', compact(
+        return view('admin.service_categories.categories_list', compact(
             'categories',
             'totalCount',
             'activeCount',

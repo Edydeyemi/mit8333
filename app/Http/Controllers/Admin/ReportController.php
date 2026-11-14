@@ -119,7 +119,7 @@ class ReportController extends Controller
         $auditLogs = $auditQuery->latest()->paginate(20)->withQueryString();
         $auditUsers = User::orderBy('first_name')->get(['id', 'first_name', 'last_name', 'email']);
 
-        return view('admin.reports.index', [
+        return view('admin.reports.reports', [
             'totalMonthlyRequests' => $totalMonthlyRequests,
             'overallSlaRate' => $overallSlaRate,
             'activeTechnicians' => $activeTechnicians,
