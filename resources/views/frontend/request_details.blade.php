@@ -48,6 +48,11 @@
 
                 <!-- Dynamic Action Button -->
                 <div class="d-flex gap-2 align-items-center">
+                    @if ($serviceRequest->canBeEditedBy(auth()->user()))
+                        <a href="{{ route('user.requests.edit', $serviceRequest->slug) }}" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-pencil-square"></i> Edit Details
+                        </a>
+                    @endif
                     @if ($serviceRequest->canBeCancelledBy(auth()->user()))
                         <button type="button" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1"
                             data-bs-toggle="modal" data-bs-target="#cancelTicketModal">

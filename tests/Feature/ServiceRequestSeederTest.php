@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\ServiceRequestAttachment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
@@ -76,10 +77,16 @@ class ServiceRequestSeederTest extends TestCase
     {
         $this->assertGreaterThanOrEqual(20, ServiceRequestStatusUpdate::count());
         $this->assertGreaterThanOrEqual(14, ServiceRequestAttachment::count());
+        $this->assertGreaterThanOrEqual(10, ServiceRequestAssignment::count());
 
         // Evidence and resolution proof attachments exist
         $this->assertTrue(ServiceRequestAttachment::where('type', 'evidence')->exists());
         $this->assertTrue(ServiceRequestAttachment::where('type', 'resolution_proof')->exists());
+
+        // Assignments exist with active, completed, and reassigned statuses
+        $this->assertTrue(ServiceRequestAssignment::where('status', 'active')->exists());
+        $this->assertTrue(ServiceRequestAssignment::where('status', 'completed')->exists());
+        $this->assertTrue(ServiceRequestAssignment::where('status', 'reassigned')->exists());
 
         // Resolved requests have resolved_at timestamps
         $resolvedRequests = ServiceRequest::where('status', 'resolved')->get();
@@ -102,6 +109,7 @@ class ServiceRequestSeederTest extends TestCase
         $initialRequestCount = ServiceRequest::count();
         $initialUpdateCount = ServiceRequestStatusUpdate::count();
         $initialAttachmentCount = ServiceRequestAttachment::count();
+        $initialAssignmentCount = ServiceRequestAssignment::count();
 
         // Run seeder second time
         $this->seed(ServiceRequestSeeder::class);
@@ -109,6 +117,7 @@ class ServiceRequestSeederTest extends TestCase
         $this->assertSame($initialRequestCount, ServiceRequest::count());
         $this->assertSame($initialUpdateCount, ServiceRequestStatusUpdate::count());
         $this->assertSame($initialAttachmentCount, ServiceRequestAttachment::count());
+        $this->assertSame($initialAssignmentCount, ServiceRequestAssignment::count());
     }
 }
 

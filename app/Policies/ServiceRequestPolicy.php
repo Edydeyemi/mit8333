@@ -42,6 +42,16 @@ class ServiceRequestPolicy
     }
 
     /**
+     * Determine whether the user can update details of the service request.
+     */
+    public function update(User $user, ServiceRequest $serviceRequest): bool
+    {
+        return $serviceRequest->user_id === $user->id
+            && $user->can('requests.create')
+            && $serviceRequest->status === 'submitted';
+    }
+
+    /**
      * Determine whether the user can cancel the service request.
      */
     public function cancel(User $user, ServiceRequest $serviceRequest): bool

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\AssignServiceRequestApiRequest;
 use App\Http\Requests\Api\StoreServiceRequestApiRequest;
+use App\Http\Requests\Api\UpdateServiceRequestApiRequest;
 use App\Http\Requests\Api\UpdateServiceRequestStatusApiRequest;
 use App\Mail\OfficerAssignedNotificationMail;
 use App\Mail\RequestStatusUpdatedNotificationMail;
@@ -14,6 +15,7 @@ use App\Mail\RequestSubmittedNotificationMail;
 use App\Mail\TaskCompletedNotificationMail;
 use App\Models\AuditLog;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
 use App\Notifications\SystemAlertNotification;
@@ -214,6 +216,46 @@ class ServiceRequestApiController extends Controller
     }
 
     /**
+     * Update details of an existing service request (Requester only, while status is submitted).
+     */
+    public function update(UpdateServiceRequestApiRequest $request, ServiceRequest $serviceRequest): JsonResponse
+    {
+        $validated = $request->validated();
+        /** @var User $user */
+        $user = $request->user();
+
+        try {
+            DB::transaction(function () use ($serviceRequest, $validated, $request, $user): void {
+                $serviceRequest->update(array_filter([
+                    'service_category_id' => $validated['service_category_id'] ?? null,
+                    'priority' => $validated['priority'] ?? null,
+                    'building' => $validated['building'] ?? null,
+                    'wing_floor' => $validated['wing_floor'] ?? null,
+                    'room_number' => $validated['room_number'] ?? null,
+                    'title' => $validated['title'] ?? null,
+                    'description' => $validated['description'] ?? null,
+                ], fn($val) => $val !== null));
+
+                // Process file attachments if uploaded
+                if ($request->hasFile('attachments')) {
+                    foreach ($request->file('attachments') as $file) {
+                        if ($file->isValid()) {
+                            $this->attachmentService->storeEvidence($file, $serviceRequest, $user);
+                        }
+                    }
+                }
+            });
+
+            $serviceRequest->load(['category', 'user', 'attachments', 'statusUpdates']);
+
+            return $this->successResponse($serviceRequest, 'Service request updated successfully.');
+        } catch (\Throwable $e) {
+            Log::error('API: Failed to update service request: ' . $e->getMessage());
+            return $this->errorResponse('Failed to update service request.', 500);
+        }
+    }
+
+    /**
      * Assign or reassign a maintenance technician (Admin / Dispatcher).
      */
     public function assign(AssignServiceRequestApiRequest $request, ServiceRequest $serviceRequest): JsonResponse
@@ -241,6 +283,24 @@ class ServiceRequestApiController extends Controller
                 $serviceRequest->assigned_at = now();
                 $serviceRequest->status = $newStatus;
                 $serviceRequest->save();
+
+                // Close previous active assignment if exists
+                ServiceRequestAssignment::where('service_request_id', $serviceRequest->id)
+                    ->where('status', 'active')
+                    ->update([
+                        'status' => 'reassigned',
+                        'unassigned_at' => now(),
+                    ]);
+
+                // Create dedicated assignment record
+                ServiceRequestAssignment::create([
+                    'service_request_id' => $serviceRequest->id,
+                    'officer_id' => $officer->id,
+                    'assigned_by_id' => $admin->id,
+                    'assigned_at' => now(),
+                    'status' => 'active',
+                    'notes' => $validated['notes'] ?? null,
+                ]);
 
                 // Record status update
                 ServiceRequestStatusUpdate::create([
@@ -415,6 +475,13 @@ class ServiceRequestApiController extends Controller
                 $serviceRequest->cancelled_at = now();
                 $serviceRequest->cancellation_reason = $reason;
                 $serviceRequest->save();
+
+                ServiceRequestAssignment::where('service_request_id', $serviceRequest->id)
+                    ->where('status', 'active')
+                    ->update([
+                        'status' => 'cancelled',
+                        'unassigned_at' => now(),
+                    ]);
 
                 ServiceRequestStatusUpdate::create([
                     'service_request_id' => $serviceRequest->id,

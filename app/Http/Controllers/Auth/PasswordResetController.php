@@ -28,9 +28,22 @@ class PasswordResetController extends Controller
     /**
      * Display password recovery view.
      */
-    public function showForgotForm(): View
+    public function showForgotForm(Request $request): View
     {
-        return view('auth.password_reset');
+        $devOtp = null;
+        if ($this->otpService->shouldDisplayDevOtp()) {
+            $devOtp = session('dev_otp');
+            if (!$devOtp) {
+                $email = session('reset_email') ?? old('email') ?? $request->query('email');
+                if ($email) {
+                    $devOtp = $this->otpService->getLatestActiveOtpForIdentifier((string) $email, UserOtp::TYPE_PASSWORD_RESET);
+                }
+            }
+        }
+
+        return view('auth.password_reset', [
+            'devOtp' => $devOtp,
+        ]);
     }
 
     /**
@@ -54,23 +67,33 @@ class PasswordResetController extends Controller
         RateLimiter::hit($throttleKey, 60);
 
         $user = User::where('email', $request->email)->first();
+        $code = null;
 
         if ($user) {
-            $this->otpService->generateOtp($user, UserOtp::TYPE_PASSWORD_RESET, 15);
+            $code = $this->otpService->generateOtp($user, UserOtp::TYPE_PASSWORD_RESET, 15);
             AuditLog::log('password_reset_otp_dispatched', $user);
         }
 
         $msg = 'If your university email is registered, a 6-digit recovery code has been sent.';
 
         if ($request->expectsJson()) {
-            return response()->json([
+            $response = [
                 'status' => 'success',
                 'message' => $msg,
                 'email' => $request->email,
-            ]);
+            ];
+            if ($this->otpService->shouldDisplayDevOtp() && $code !== null) {
+                $response['dev_otp'] = $code;
+            }
+            return response()->json($response);
         }
 
-        return back()->withInput()->with('status', $msg);
+        $redirect = back()->withInput()->with('status', $msg)->with('reset_email', $request->email);
+        if ($this->otpService->shouldDisplayDevOtp() && $code !== null) {
+            $redirect->with('dev_otp', $code);
+        }
+
+        return $redirect;
     }
 
     /**

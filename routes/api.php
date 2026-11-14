@@ -34,6 +34,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::get('/', [ServiceRequestApiController::class, 'index'])->name('index');
             Route::post('/', [ServiceRequestApiController::class, 'store'])->name('store');
             Route::get('/{serviceRequest}', [ServiceRequestApiController::class, 'show'])->name('show');
+            Route::put('/{serviceRequest}', [ServiceRequestApiController::class, 'update'])->name('update');
             Route::post('/{serviceRequest}/assign', [ServiceRequestApiController::class, 'assign'])->name('assign');
             Route::patch('/{serviceRequest}/status', [ServiceRequestApiController::class, 'updateStatus'])->name('status');
             Route::post('/{serviceRequest}/cancel', [ServiceRequestApiController::class, 'cancel'])->name('cancel');

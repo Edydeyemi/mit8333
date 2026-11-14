@@ -114,4 +114,21 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Development & Staging Frontend OTP Display
+    |--------------------------------------------------------------------------
+    |
+    | When running in non-production environments (local, staging), transactional
+    | email dispatch may be disabled or bypassed. When enabled, active OTP
+    | codes are exposed on the frontend verification views alongside a clear notice.
+    | This can be toggled via the SHOW_DEV_OTP variable in your .env file.
+    |
+    */
+
+    'show_dev_otp' => env(
+        'SHOW_DEV_OTP',
+        in_array(env('APP_ENV', 'production'), ['local', 'staging', 'development', 'testing'], true)
+    ),
+
 ];

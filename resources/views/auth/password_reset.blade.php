@@ -62,7 +62,7 @@
             @endif
 
             <!-- Step 1: Request Code Form -->
-            <div id="step1Container" @if(session('status') || old('code') || $errors->has('code') || $errors->has('password')) style="display:none;" @endif>
+            <div id="step1Container" @if(session('status') || old('code') || $errors->has('code') || $errors->has('password') || session('dev_otp') || !empty($devOtp)) style="display:none;" @endif>
                 <form id="requestCodeForm" method="POST" action="{{ route('password.email') }}">
                     @csrf
                     <div class="mb-3">
@@ -95,7 +95,13 @@
             </div>
 
             <!-- Step 2: Enter Code & New Password -->
-            <div id="step2Container" @if(!session('status') && !old('code') && !$errors->has('code') && !$errors->has('password')) style="display:none;" @endif>
+            <div id="step2Container" @if(!session('status') && !old('code') && !$errors->has('code') && !$errors->has('password') && !session('dev_otp') && empty($devOtp)) style="display:none;" @endif>
+                <!-- Staging / Local Dev OTP Notice -->
+                @include('auth.partials.dev_otp_notice', [
+                    'otp' => $devOtp ?? session('dev_otp'),
+                    'targetInputId' => 'otpCode',
+                ])
+
                 <div class="alert alert-warning border-0 rounded-3 small mb-3">
                     <i class="bi bi-shield-check me-1"></i>
                     Enter the 6-digit verification code sent to your email and your new password.

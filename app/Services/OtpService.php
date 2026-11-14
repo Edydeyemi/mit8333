@@ -148,5 +148,55 @@ class OtpService
         $elapsed = $latest->created_at->diffInSeconds(now());
         return (int) max(0, $cooldownSeconds - $elapsed);
     }
+
+    /**
+     * Determine whether active OTPs should be displayed on the frontend / dev endpoints.
+     * Strictly guaranteed to return false in production environments.
+     */
+    public function shouldDisplayDevOtp(): bool
+    {
+        if (app()->environment('production')) {
+            return false;
+        }
+
+        return in_array(app()->environment(), ['local', 'staging', 'development', 'testing'], true)
+            && (bool) config('auth.show_dev_otp', true);
+    }
+
+    /**
+     * Retrieve the latest active, unexpired OTP code for a user.
+     */
+    public function getLatestActiveOtp(User|int $user, string $type = UserOtp::TYPE_TWO_FACTOR): ?string
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+
+        $otp = UserOtp::where('user_id', $userId)
+            ->where('type', $type)
+            ->latest('id')
+            ->first();
+
+        if (!$otp || $otp->isExpired() || $otp->hasExceededMaxAttempts(self::MAX_ATTEMPTS)) {
+            return null;
+        }
+
+        return (string) $otp->code;
+    }
+
+    /**
+     * Retrieve the latest active, unexpired OTP code for an identifier (e.g. email).
+     */
+    public function getLatestActiveOtpForIdentifier(string $identifier, string $type = UserOtp::TYPE_PASSWORD_RESET): ?string
+    {
+        $otp = UserOtp::where('identifier', $identifier)
+            ->where('type', $type)
+            ->latest('id')
+            ->first();
+
+        if (!$otp || $otp->isExpired() || $otp->hasExceededMaxAttempts(self::MAX_ATTEMPTS)) {
+            return null;
+        }
+
+        return (string) $otp->code;
+    }
 }
 

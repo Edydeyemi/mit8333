@@ -6,9 +6,11 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreServiceRequestRequest;
+use App\Http\Requests\User\UpdateServiceRequestRequest;
 use App\Mail\RequestSubmittedNotificationMail;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\User;
 use App\Notifications\SystemAlertNotification;
 use App\Services\AttachmentStorageService;
@@ -159,6 +161,79 @@ class ServiceRequestController extends Controller
     }
 
     /**
+     * Show the form for editing an existing service request (while submitted).
+     */
+    public function edit(ServiceRequest $serviceRequest): View
+    {
+        Gate::authorize('update', $serviceRequest);
+
+        $categories = ServiceCategory::active()->orderBy('name')->get();
+
+        return view('frontend.edit_request', [
+            'serviceRequest' => $serviceRequest,
+            'categories' => $categories,
+            'buildings' => $this->buildings,
+        ]);
+    }
+
+    /**
+     * Update the specified service request in storage.
+     */
+    public function update(
+        UpdateServiceRequestRequest $request,
+        ServiceRequest $serviceRequest,
+        AttachmentStorageService $attachmentService
+    ): RedirectResponse {
+        Gate::authorize('update', $serviceRequest);
+
+        $validated = $request->validated();
+        $user = $request->user();
+
+        // Handle custom building name if 'Other' was selected
+        $building = $validated['building'];
+        if ($building === 'Other' && !empty($request->input('custom_building'))) {
+            $building = trim((string) $request->input('custom_building'));
+        }
+
+        try {
+            DB::transaction(function () use ($serviceRequest, $validated, $building, $request, $attachmentService, $user): void {
+                $serviceRequest->update([
+                    'service_category_id' => $validated['service_category_id'],
+                    'priority' => $validated['priority'],
+                    'building' => $building,
+                    'wing_floor' => $validated['wing_floor'],
+                    'room_number' => $validated['room_number'],
+                    'title' => $validated['title'],
+                    'description' => $validated['description'],
+                ]);
+
+                // Store any newly uploaded attachments
+                if ($request->hasFile('attachments')) {
+                    foreach ($request->file('attachments') as $file) {
+                        if ($file->isValid()) {
+                            $attachmentService->storeEvidence($file, $serviceRequest, $user);
+                        }
+                    }
+                }
+            });
+
+            return redirect()
+                ->route('user.requests.show', $serviceRequest->slug)
+                ->with('success', "Service request {$serviceRequest->tracking_code} updated successfully.");
+        } catch (\Throwable $e) {
+            Log::error('Failed to update service request', [
+                'user_id' => $user->id,
+                'request_id' => $serviceRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Unable to update service request. Please review your input and try again.');
+        }
+    }
+
+    /**
      * Display the specified service request details and lifecycle.
      */
     public function show(ServiceRequest $serviceRequest): View
@@ -197,6 +272,13 @@ class ServiceRequestController extends Controller
             'cancelled_at' => now(),
             'cancellation_reason' => $request->input('cancellation_reason', 'Cancelled by requester'),
         ]);
+
+        ServiceRequestAssignment::where('service_request_id', $serviceRequest->id)
+            ->where('status', 'active')
+            ->update([
+                'status' => 'cancelled',
+                'unassigned_at' => now(),
+            ]);
 
         $message = "Service request {$serviceRequest->tracking_code} has been successfully cancelled.";
 

@@ -90,7 +90,7 @@ class LoginController extends Controller
         RateLimiter::clear($throttleKey);
 
         // Generate and dispatch 2FA OTP
-        $this->otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
+        $code = $this->otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
 
         // Store pending user in session
         $request->session()->put('auth.2fa.user_id', $user->id);
@@ -99,18 +99,28 @@ class LoginController extends Controller
         AuditLog::log('login_2fa_dispatched', $user);
 
         if ($request->expectsJson()) {
-            return response()->json([
+            $response = [
                 'status' => 'success',
                 'requires_2fa' => true,
                 'message' => 'Verification code sent to your registered email address.',
                 'redirect' => route('login.2fa'),
-            ]);
+            ];
+            if ($this->otpService->shouldDisplayDevOtp()) {
+                $response['dev_otp'] = $code;
+            }
+            return response()->json($response);
         }
 
-        return redirect()->route('login.2fa')->with(
+        $redirect = redirect()->route('login.2fa')->with(
             'status',
             'A 6-digit verification code has been dispatched to your email address.'
         );
+
+        if ($this->otpService->shouldDisplayDevOtp()) {
+            $redirect->with('dev_otp', $code);
+        }
+
+        return $redirect;
     }
 
     /**
@@ -135,10 +145,16 @@ class LoginController extends Controller
         $maskedEmail = $this->maskEmail($user->email);
         $cooldown = $this->otpService->getRemainingCooldown($user, UserOtp::TYPE_TWO_FACTOR);
 
+        $devOtp = null;
+        if ($this->otpService->shouldDisplayDevOtp()) {
+            $devOtp = session('dev_otp') ?? $this->otpService->getLatestActiveOtp($user, UserOtp::TYPE_TWO_FACTOR);
+        }
+
         return view('auth.two_factor', [
             'user' => $user,
             'maskedEmail' => $maskedEmail,
             'cooldown' => $cooldown,
+            'devOtp' => $devOtp,
         ]);
     }
 
@@ -223,15 +239,24 @@ class LoginController extends Controller
             return back()->withErrors(['resend' => $msg]);
         }
 
-        $this->otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
+        $code = $this->otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
 
         $msg = 'A fresh 6-digit verification code has been dispatched to your email.';
 
         if ($request->expectsJson()) {
-            return response()->json(['status' => 'success', 'message' => $msg]);
+            $response = ['status' => 'success', 'message' => $msg];
+            if ($this->otpService->shouldDisplayDevOtp()) {
+                $response['dev_otp'] = $code;
+            }
+            return response()->json($response);
         }
 
-        return back()->with('status', $msg);
+        $redirect = back()->with('status', $msg);
+        if ($this->otpService->shouldDisplayDevOtp()) {
+            $redirect->with('dev_otp', $code);
+        }
+
+        return $redirect;
     }
 
     /**

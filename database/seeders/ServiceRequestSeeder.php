@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\ServiceRequestAttachment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
@@ -114,6 +115,24 @@ class ServiceRequestSeeder extends Seeder
                 'evidence' => [
                     'file_name' => 'water_leakage_photo.jpg',
                     'file_path' => 'evidence/photos/sample_water_leak.jpg',
+                ],
+                'assignments' => [
+                    [
+                        'officer_id' => $officer1->id,
+                        'assigned_by_id' => $admin->id,
+                        'assigned_at' => $now->copy()->subMinutes(55),
+                        'unassigned_at' => $now->copy()->subMinutes(45),
+                        'status' => 'reassigned',
+                        'notes' => 'Initially routed to Officer Marcus Vance, then rerouted due to technician proximity.',
+                    ],
+                    [
+                        'officer_id' => $officer3->id,
+                        'assigned_by_id' => $admin->id,
+                        'assigned_at' => $now->copy()->subMinutes(45),
+                        'unassigned_at' => null,
+                        'status' => 'active',
+                        'notes' => 'Emergency plumbing dispatch. Officer Brenda Chisom assigned to shut down riser valve immediately.',
+                    ],
                 ],
                 'status_updates' => [
                     [
@@ -632,8 +651,9 @@ class ServiceRequestSeeder extends Seeder
             $evidenceData = $item['evidence'] ?? null;
             $resolutionData = $item['resolution'] ?? null;
             $statusUpdatesData = $item['status_updates'] ?? [];
+            $assignmentsData = $item['assignments'] ?? null;
 
-            unset($item['evidence'], $item['resolution'], $item['status_updates']);
+            unset($item['evidence'], $item['resolution'], $item['status_updates'], $item['assignments']);
 
             $request = ServiceRequest::updateOrCreate(
                 ['slug' => $item['slug']],
@@ -694,6 +714,63 @@ class ServiceRequestSeeder extends Seeder
                         'uploaded_by' => $request->assigned_officer_id ?? $admin->id,
                         'created_at' => $request->resolved_at ?? $now,
                         'updated_at' => $request->resolved_at ?? $now,
+                    ]
+                );
+            }
+
+            // Seed dedicated assignments entity records
+            if (!empty($assignmentsData)) {
+                foreach ($assignmentsData as $aData) {
+                    $slug = 'sra-' . $request->slug . '-' . $aData['officer_id'] . '-' . ($aData['status'] ?? 'active');
+                    ServiceRequestAssignment::updateOrCreate(
+                        [
+                            'slug' => $slug,
+                        ],
+                        [
+                            'service_request_id' => $request->id,
+                            'officer_id' => $aData['officer_id'],
+                            'assigned_by_id' => $aData['assigned_by_id'] ?? $admin->id,
+                            'assigned_at' => $aData['assigned_at'],
+                            'unassigned_at' => $aData['unassigned_at'] ?? null,
+                            'status' => $aData['status'] ?? 'active',
+                            'notes' => $aData['notes'] ?? null,
+                            'created_at' => $aData['assigned_at'] ?? $request->created_at,
+                            'updated_at' => $aData['updated_at'] ?? $now,
+                        ]
+                    );
+                }
+            } elseif ($request->assigned_officer_id) {
+                $assignmentStatus = match ($request->status) {
+                    'resolved' => 'completed',
+                    'cancelled' => 'cancelled',
+                    default => 'active',
+                };
+
+                $assignedNotes = null;
+                foreach ($statusUpdatesData as $su) {
+                    if ($su['status'] === 'assigned') {
+                        $assignedNotes = $su['notes'] ?? null;
+                        break;
+                    }
+                }
+
+                $slug = 'sra-' . $request->slug . '-' . $request->assigned_officer_id;
+                ServiceRequestAssignment::updateOrCreate(
+                    [
+                        'slug' => $slug,
+                    ],
+                    [
+                        'service_request_id' => $request->id,
+                        'officer_id' => $request->assigned_officer_id,
+                        'assigned_by_id' => $admin->id,
+                        'assigned_at' => $request->assigned_at ?? $request->created_at,
+                        'unassigned_at' => in_array($assignmentStatus, ['cancelled', 'completed'], true)
+                            ? ($request->resolved_at ?? $request->cancelled_at)
+                            : null,
+                        'status' => $assignmentStatus,
+                        'notes' => $assignedNotes ?? 'Dispatched by university operations console.',
+                        'created_at' => $request->assigned_at ?? $request->created_at,
+                        'updated_at' => $request->updated_at ?? $now,
                     ]
                 );
             }

@@ -11,6 +11,7 @@ use App\Mail\TaskCompletedNotificationMail;
 use App\Models\AuditLog;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Notifications\SystemAlertNotification;
 use App\Services\AttachmentStorageService;
@@ -112,6 +113,11 @@ class FacilityTaskController extends Controller
                 $serviceRequest->status = $newStatus;
                 if ($newStatus === 'resolved') {
                     $serviceRequest->resolved_at = now();
+
+                    // Mark active assignment as completed
+                    ServiceRequestAssignment::where('service_request_id', $serviceRequest->id)
+                        ->where('status', 'active')
+                        ->update(['status' => 'completed']);
                 }
                 $serviceRequest->save();
 

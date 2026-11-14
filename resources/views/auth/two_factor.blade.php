@@ -67,6 +67,12 @@
                 </div>
             @endif
 
+            <!-- Staging / Local Dev OTP Notice -->
+            @include('auth.partials.dev_otp_notice', [
+                'otp' => $devOtp ?? session('dev_otp'),
+                'targetInputId' => 'otpCodeInput',
+            ])
+
             <!-- 2FA OTP Form -->
             <form id="twoFactorForm" method="POST" action="{{ route('login.2fa.verify') }}">
                 @csrf

@@ -10,6 +10,7 @@ use App\Mail\OfficerAssignedNotificationMail;
 use App\Models\AuditLog;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
 use App\Notifications\SystemAlertNotification;
@@ -159,6 +160,24 @@ class ServiceRequestController extends Controller
                 if (!empty($validated['notes'])) {
                     $notes .= ' Notes: ' . trim((string) $validated['notes']);
                 }
+
+                // Close any existing active assignment for this ticket
+                ServiceRequestAssignment::where('service_request_id', $serviceRequest->id)
+                    ->where('status', 'active')
+                    ->update([
+                        'status' => 'reassigned',
+                        'unassigned_at' => now(),
+                    ]);
+
+                // Create dedicated assignment record
+                ServiceRequestAssignment::create([
+                    'service_request_id' => $serviceRequest->id,
+                    'officer_id' => $officer->id,
+                    'assigned_by_id' => $admin->id,
+                    'assigned_at' => now(),
+                    'status' => 'active',
+                    'notes' => $validated['notes'] ?? null,
+                ]);
 
                 ServiceRequestStatusUpdate::create([
                     'service_request_id' => $serviceRequest->id,
