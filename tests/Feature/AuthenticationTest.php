@@ -174,4 +174,22 @@ class AuthenticationTest extends TestCase
             ],
         ]);
     }
+
+    public function test_otp_email_is_queued_asynchronously(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $user = User::factory()->create();
+        $otpService = app(OtpService::class);
+        $code = $otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
+
+        \Illuminate\Support\Facades\Mail::assertQueued(
+            \App\Mail\OtpNotificationMail::class,
+            function (\App\Mail\OtpNotificationMail $mail) use ($user, $code) {
+                return $mail->hasTo($user->email)
+                    && $mail->code === $code
+                    && $mail instanceof \Illuminate\Contracts\Queue\ShouldQueue;
+            }
+        );
+    }
 }
