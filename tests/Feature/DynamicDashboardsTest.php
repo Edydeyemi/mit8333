@@ -156,7 +156,7 @@ class DynamicDashboardsTest extends TestCase
     {
         $response = $this->actingAs($this->student)->get('/portal');
         $response->assertStatus(200);
-        $response->assertSee('Campus Resident Portal');
+        $response->assertSee('Student Dashboard');
         $response->assertSee('chartUserStatus');
         $response->assertSee('chartUserCategories');
         $response->assertSee('userDashboardPayload');

@@ -785,7 +785,12 @@ class ServiceRequestSeeder extends Seeder
             }
         }
 
-        // 6. Seed 120 Faker-generated requests pulling existing DB users & officers
+        // 6. Seed 120 Faker-generated requests pulling existing DB users & officers (idempotent guard)
+        $structuredSlugs = array_column($requestsData, 'slug');
+        if (ServiceRequest::whereNotIn('slug', $structuredSlugs)->count() >= 120) {
+            return;
+        }
+
         $requesters = User::where('role', 'user')->where('status', 'active')->get();
         $officers = User::where('role', 'officer')->where('status', 'active')->get();
         $admins = User::whereIn('role', ['super_admin', 'admin'])->where('status', 'active')->get();
