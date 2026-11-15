@@ -6,9 +6,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AssignServiceRequestRequest;
+use App\Mail\OfficerAssignedNotificationMail;
 use App\Models\AuditLog;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestAssignment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
 use App\Notifications\SystemAlertNotification;
@@ -19,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ServiceRequestController extends Controller
 {
@@ -70,7 +73,7 @@ class ServiceRequestController extends Controller
             'resolved' => ServiceRequest::where('status', 'resolved')->count(),
         ];
 
-        return view('admin.requests.index', [
+        return view('admin.requests.submitted_requests', [
             'requests' => $requests,
             'categories' => $categories,
             'officers' => $officers,
@@ -106,7 +109,7 @@ class ServiceRequestController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        return view('admin.requests.show', [
+        return view('admin.requests.request_details', [
             'serviceRequest' => $serviceRequest,
             'officers' => $officers,
         ]);
@@ -158,6 +161,24 @@ class ServiceRequestController extends Controller
                     $notes .= ' Notes: ' . trim((string) $validated['notes']);
                 }
 
+                // Close any existing active assignment for this ticket
+                ServiceRequestAssignment::where('service_request_id', $serviceRequest->id)
+                    ->where('status', 'active')
+                    ->update([
+                        'status' => 'reassigned',
+                        'unassigned_at' => now(),
+                    ]);
+
+                // Create dedicated assignment record
+                ServiceRequestAssignment::create([
+                    'service_request_id' => $serviceRequest->id,
+                    'officer_id' => $officer->id,
+                    'assigned_by_id' => $admin->id,
+                    'assigned_at' => now(),
+                    'status' => 'active',
+                    'notes' => $validated['notes'] ?? null,
+                ]);
+
                 ServiceRequestStatusUpdate::create([
                     'service_request_id' => $serviceRequest->id,
                     'user_id' => $admin->id,
@@ -181,7 +202,7 @@ class ServiceRequestController extends Controller
                     $admin
                 );
 
-                // Notify Assigned Officer
+                // Notify Assigned Officer (In-App & Email)
                 $officer->notify(new SystemAlertNotification(
                     title: 'New Work Order Dispatched',
                     message: "You have been assigned to Ticket {$serviceRequest->tracking_code}: {$serviceRequest->title} at {$serviceRequest->building} ({$serviceRequest->room_number}).",
@@ -190,7 +211,11 @@ class ServiceRequestController extends Controller
                     icon: 'bi-tools'
                 ));
 
-                // Notify Submitter
+                if ($officer->email) {
+                    Mail::to($officer->email)->queue(new OfficerAssignedNotificationMail($serviceRequest, $officer, $officer, true));
+                }
+
+                // Notify Submitter (In-App & Email)
                 if ($serviceRequest->user) {
                     $serviceRequest->user->notify(new SystemAlertNotification(
                         title: 'Technician Dispatched',
@@ -199,6 +224,10 @@ class ServiceRequestController extends Controller
                         url: route('user.requests.show', $serviceRequest->slug),
                         icon: 'bi-person-check-fill'
                     ));
+
+                    if ($serviceRequest->user->email) {
+                        Mail::to($serviceRequest->user->email)->queue(new OfficerAssignedNotificationMail($serviceRequest, $serviceRequest->user, $officer, false));
+                    }
                 }
             });
 

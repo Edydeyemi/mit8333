@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 96" width="100%" height="100%">
+  <defs>
+    <!-- Metallic Gold Gradients -->
+    <linearGradient id="goldHLinear" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff1b8" />
+      <stop offset="25%" stop-color="#f59e0b" />
+      <stop offset="65%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#92400e" />
+    </linearGradient>
+
+    <linearGradient id="goldHLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+
+    <linearGradient id="navyHBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f1d36" />
+      <stop offset="60%" stop-color="#091324" />
+      <stop offset="100%" stop-color="#040811" />
+    </linearGradient>
+
+    <radialGradient id="radialHGlow" cx="50%" cy="38%" r="48%">
+      <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#040811" stop-opacity="0" />
+    </radialGradient>
+
+    <filter id="hShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Left Side: Integrated Shield Emblem (Scale to ~76x76, placed at x=8, y=10) -->
+  <g transform="translate(10, 8) scale(0.156)" filter="url(#hShadow)">
+    <!-- Outer Shield Crest Contour -->
+    <path d="M 256 22 C 382 22, 464 70, 474 176 C 484 312, 378 424, 256 490 C 134 424, 28 312, 38 176 C 48 70, 130 22, 256 22 Z" 
+          fill="url(#navyHBg)" stroke="url(#goldHLinear)" stroke-width="12" stroke-linejoin="round" />
+    <path d="M 256 36 C 370 36, 448 78, 458 176 C 468 300, 368 408, 256 472 C 144 408, 44 300, 54 176 C 64 78, 142 36, 256 36 Z" 
+          fill="url(#radialHGlow)" />
+    <path d="M 256 44 C 364 44, 440 82, 450 178 C 458 296, 362 398, 256 462 C 150 398, 54 296, 62 178 C 72 82, 148 44, 256 44 Z" 
+          fill="none" stroke="url(#goldHLinear)" stroke-width="3" stroke-opacity="0.8" />
+
+    <!-- Top Spire & Dome -->
+    <path d="M 256 50 L 260 76 L 252 76 Z" fill="url(#goldHLinear)" />
+    <circle cx="256" cy="48" r="5" fill="#fef08a" />
+    <path d="M 228 106 C 228 78, 284 78, 284 106 Z" fill="url(#goldHLinear)" />
+    <rect x="222" y="106" width="68" height="6" rx="2" fill="url(#goldHLight)" />
+    <!-- Pediment -->
+    <path d="M 256 102 L 374 152 L 138 152 Z" fill="url(#navyHBg)" stroke="url(#goldHLinear)" stroke-width="4" />
+    <polygon points="256,112 354,148 158,148" fill="url(#goldHLinear)" fill-opacity="0.3" />
+    <rect x="130" y="152" width="252" height="12" rx="2" fill="url(#goldHLinear)" />
+
+    <!-- Left Pillar (H Leg) -->
+    <path d="M 148 164 L 206 164 L 200 178 L 154 178 Z" fill="url(#goldHLinear)" />
+    <rect x="156" y="178" width="42" height="172" rx="3" fill="url(#goldHLight)" />
+    <line x1="177" y1="184" x2="177" y2="344" stroke="#ffffff" stroke-width="3" stroke-opacity="0.7" />
+    <path d="M 152 350 L 202 350 L 208 362 L 146 362 Z" fill="url(#goldHLinear)" />
+
+    <!-- Right Pillar (H Leg) -->
+    <path d="M 306 164 L 364 164 L 358 178 L 312 178 Z" fill="url(#goldHLinear)" />
+    <rect x="314" y="178" width="42" height="172" rx="3" fill="url(#goldHLight)" />
+    <line x1="335" y1="184" x2="335" y2="344" stroke="#ffffff" stroke-width="3" stroke-opacity="0.7" />
+    <path d="M 310 350 L 360 350 L 366 362 L 304 362 Z" fill="url(#goldHLinear)" />
+
+    <!-- H Crossbar -->
+    <rect x="198" y="244" width="116" height="30" rx="3" fill="url(#navyHBg)" stroke="url(#goldHLinear)" stroke-width="4" />
+
+    <!-- Central Precision Gear -->
+    <g transform="translate(256, 259)">
+      <circle cx="0" cy="0" r="44" fill="url(#goldHLinear)" />
+      <circle cx="0" cy="0" r="32" fill="url(#navyHBg)" stroke="url(#goldHLight)" stroke-width="3" />
+      <path d="M 0 -22 C 2 -8, 8 -2, 22 0 C 8 2, 2 8, 0 22 C -2 8, -8 2, -22 0 C -8 -2, -2 -8, 0 -22 Z" fill="url(#goldHLinear)" />
+      <circle cx="0" cy="0" r="4" fill="#ffffff" />
+    </g>
+
+    <!-- Foundation Steps -->
+    <rect x="126" y="364" width="260" height="11" rx="2" fill="url(#goldHLinear)" />
+    <rect x="108" y="377" width="296" height="11" rx="2" fill="url(#goldHLight)" />
+    <rect x="90" y="390" width="332" height="13" rx="3" fill="url(#goldHLinear)" />
+
+    <!-- Bottom Ribbon -->
+    <path d="M 170 430 Q 256 454 342 430 L 334 452 Q 256 474 178 452 Z" fill="url(#goldHLinear)" />
+    <text x="256" y="449" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="900" letter-spacing="3" fill="#0a1324">HEADWORLD</text>
+  </g>
+
+  <!-- Right Side: Brand Typography for Dark Backgrounds -->
+  <g transform="translate(102, 18)">
+    <!-- Primary Brand Wordmark: "HEADWORLD" -->
+    <text x="0" y="33" 
+          font-family="Georgia, 'Times New Roman', 'Cinzel', serif" 
+          font-size="28" 
+          font-weight="800" 
+          letter-spacing="3" 
+          fill="#ffffff">HEADWORLD</text>
+
+    <!-- Sleek Gold Accent Line -->
+    <line x1="1" y1="42" x2="310" y2="42" stroke="url(#goldHLinear)" stroke-width="1.8" stroke-linecap="round" />
+    
+    <!-- Secondary Descriptor: "FACILITY MANAGEMENT" -->
+    <text x="1" y="58" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+          font-size="11" 
+          font-weight="700" 
+          letter-spacing="3.8" 
+          fill="#dfb746">FACILITY MANAGEMENT</text>
+
+    <!-- Operational Subline -->
+    <text x="1" y="70" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+          font-size="8" 
+          font-weight="600" 
+          letter-spacing="2" 
+          fill="#94a3b8">CAMPUS OPERATIONS PORTAL</text>
+  </g>
+</svg>

@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceRequestController;
@@ -11,12 +13,9 @@ use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function (): void {
-    // Executive Dashboard
-    Route::get('/', function () {
-        return view('admin.admin_dashboard', [
-            'user' => auth()->user(),
-        ]);
-    })->name('dashboard');
+    // Executive Dashboard & Live Analytics
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
     // Service Categories Management
     Route::prefix('service-categories')->name('categories.')->group(function (): void {
@@ -49,6 +48,14 @@ Route::middleware(['auth'])->group(function (): void {
         Route::post('/', [UserController::class, 'store'])->name('store');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::patch('/{user}/toggle', [UserController::class, 'toggleStatus'])->name('toggle');
+    });
+
+    // Executive Analytics, SLA Reports & Audit Trail
+    Route::prefix('reports')->name('reports.')->group(function (): void {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/export/requests', [ReportController::class, 'exportRequests'])->name('export.requests');
+        Route::get('/export/officers', [ReportController::class, 'exportOfficers'])->name('export.officers');
+        Route::get('/export/audits', [ReportController::class, 'exportAudits'])->name('export.audits');
     });
 
     // Notifications Center & Active Poller API

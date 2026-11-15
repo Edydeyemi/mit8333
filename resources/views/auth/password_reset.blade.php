@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Recovery | Headworld Campus Operations</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Bootstrap 5 CSS Foundation -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="{{ asset('assets/font/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Custom Design Tokens & Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/variables.css') }}">
@@ -26,12 +30,9 @@
         <div class="auth-form-side">
             <div class="mb-4">
                 <a href="{{ url('/') }}"
-                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3">
-                    <div class="brand-crest">H</div>
-                    <div>
-                        <div class="brand-title text-dark">HEADWORLD</div>
-                        <div class="brand-subtitle text-warning">CAMPUS OPERATIONS</div>
-                    </div>
+                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3"
+                    aria-label="HeadWorld Campus Operations">
+                    <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 46px; max-width: 270px;">
                 </a>
                 <h2 class="fw-bold text-navy-900 mt-1">Account Recovery</h2>
                 <p class="text-muted small">
@@ -61,7 +62,7 @@
             @endif
 
             <!-- Step 1: Request Code Form -->
-            <div id="step1Container" @if(session('status') || old('code') || $errors->has('code') || $errors->has('password')) style="display:none;" @endif>
+            <div id="step1Container" @if(session('status') || old('code') || $errors->has('code') || $errors->has('password') || session('dev_otp') || !empty($devOtp)) style="display:none;" @endif>
                 <form id="requestCodeForm" method="POST" action="{{ route('password.email') }}">
                     @csrf
                     <div class="mb-3">
@@ -94,7 +95,13 @@
             </div>
 
             <!-- Step 2: Enter Code & New Password -->
-            <div id="step2Container" @if(!session('status') && !old('code') && !$errors->has('code') && !$errors->has('password')) style="display:none;" @endif>
+            <div id="step2Container" @if(!session('status') && !old('code') && !$errors->has('code') && !$errors->has('password') && !session('dev_otp') && empty($devOtp)) style="display:none;" @endif>
+                <!-- Staging / Local Dev OTP Notice -->
+                @include('auth.partials.dev_otp_notice', [
+                    'otp' => $devOtp ?? session('dev_otp'),
+                    'targetInputId' => 'otpCode',
+                ])
+
                 <div class="alert alert-warning border-0 rounded-3 small mb-3">
                     <i class="bi bi-shield-check me-1"></i>
                     Enter the 6-digit verification code sent to your email and your new password.

@@ -57,11 +57,31 @@ class AuditLog extends Model
     }
 
     /**
+     * Get details text from changes payload if present.
+     */
+    public function getDetailsAttribute(): ?string
+    {
+        if (is_array($this->changes)) {
+            return $this->changes['action_description'] ?? $this->changes['details'] ?? null;
+        }
+
+        return null;
+    }
+
+    /**
      * Actor (User) who performed the action.
      */
     public function actor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'actor_id');
+    }
+
+    /**
+     * Alias for actor relationship.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->actor();
     }
 
     /**

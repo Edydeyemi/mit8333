@@ -362,7 +362,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">
-                        <i class="bi bi-person-gear text-warning me-1"></i> Delegate to Maintenance Officer
+                        <i class="bi bi-person-gear text-warning me-1"></i> Assign to Maintenance Officer
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>

@@ -41,7 +41,7 @@ class NotificationController extends Controller
             ->paginate(15)
             ->appends($filters);
 
-        return view('admin.notifications.index', compact(
+        return view('admin.notifications.notifications', compact(
             'notifications',
             'status',
             'totalCount',

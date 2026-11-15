@@ -113,6 +113,21 @@ class User extends Authenticatable
     }
 
     /**
+     * Get profile photo URL.
+     */
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        if (!empty($this->profile_photo)) {
+            if (filter_var($this->profile_photo, FILTER_VALIDATE_URL)) {
+                return $this->profile_photo;
+            }
+            return asset('storage/' . ltrim($this->profile_photo, '/'));
+        }
+
+        return null;
+    }
+
+    /**
      * Check if user is active.
      */
     public function isActive(): bool

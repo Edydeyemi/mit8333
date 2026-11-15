@@ -8,36 +8,45 @@
             <h5 class="fw-bold mb-0 text-navy-900">Campus Facilities Field Desk</h5>
             <small class="text-muted">Welcome back, {{ $user->name }} &bull; Active Technician Queue</small>
         </div>
-        <a href="{{ route('facility.tasks.index') }}" class="btn btn-gold btn-sm d-flex align-items-center gap-1">
-            <i class="bi bi-kanban me-1"></i> Interactive Kanban Pipeline
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <div id="officerSyncBadge">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 d-inline-flex align-items-center gap-1">
+                    <span class="status-dot bg-success"></span> Live Syncing
+                </span>
+            </div>
+            <a href="{{ route('facility.tasks.index') }}" class="btn btn-gold btn-sm d-flex align-items-center gap-1">
+                <i class="bi bi-kanban me-1"></i> Interactive Kanban Pipeline
+            </a>
+        </div>
     </div>
 @endsection
 
 @section('content')
     <div class="page-content">
-        <!-- Emergency Triage Banner (Conditional) -->
-        @if ($emergencyTicket)
-            <div
-                class="alert alert-danger border-0 rounded-4 shadow-sm p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-danger text-white rounded-circle p-3 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+        <!-- Emergency Triage Banner Container -->
+        <div id="officerEmergencyBannerContainer">
+            @if ($emergencyTicket)
+                <div
+                    class="alert alert-danger border-0 rounded-4 shadow-sm p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-danger text-white rounded-circle p-3 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1 text-danger">Immediate Action Required: {{ $emergencyTicket->title }}</h5>
+                            <p class="small text-danger mb-0 opacity-75">
+                                Ticket <strong>{{ $emergencyTicket->tracking_code }}</strong> &bull; Location:
+                                {{ $emergencyTicket->building }} ({{ $emergencyTicket->room_number }}).
+                                SLA Target: &lt; 2 Hours.
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h5 class="fw-bold mb-1 text-danger">Immediate Action Required: {{ $emergencyTicket->title }}</h5>
-                        <p class="small text-danger mb-0 opacity-75">
-                            Ticket <strong>{{ $emergencyTicket->tracking_code }}</strong> &bull; Location:
-                            {{ $emergencyTicket->building }} ({{ $emergencyTicket->room_number }}).
-                            SLA Target: &lt; 2 Hours.
-                        </p>
-                    </div>
+                    <a href="{{ route('facility.tasks.show', $emergencyTicket->slug) }}" class="btn btn-danger text-nowrap px-3">
+                        <i class="bi bi-tools me-1"></i> Start Emergency Work
+                    </a>
                 </div>
-                <a href="{{ route('facility.tasks.show', $emergencyTicket->slug) }}" class="btn btn-danger text-nowrap px-3">
-                    <i class="bi bi-tools me-1"></i> Start Emergency Work
-                </a>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <!-- Metric Cards -->
         <div class="row g-3 mb-4">
@@ -94,9 +103,42 @@
                             <i class="bi bi-shield-check"></i>
                         </div>
                     </div>
-                    <div class="stat-card-value">96.4%</div>
+                    <div class="stat-card-value text-gold" id="kpiMySla">{{ $slaComplianceRate }}%</div>
                     <div class="stat-card-trend">
                         <span class="text-success">Institutional benchmark: &gt;90%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart.js Visualizations Row -->
+        <div class="row g-4 mb-4">
+            <!-- Weekly Resolution Velocity -->
+            <div class="col-lg-7">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-navy-900 d-flex align-items-center gap-2">
+                            <i class="bi bi-speedometer2 text-warning"></i> 7-Day Task Influx vs Resolution Velocity
+                        </h5>
+                        <span class="badge bg-secondary text-navy-900 border">My Weekly Throughput</span>
+                    </div>
+                    <div style="height: 270px; position: relative;">
+                        <canvas id="chartOfficerVelocity"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Category Breakdown -->
+            <div class="col-lg-5">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-navy-900 d-flex align-items-center gap-2">
+                            <i class="bi bi-pie-chart text-warning"></i> My Tasks by Specialty
+                        </h5>
+                        <span class="badge bg-secondary text-muted border font-mono">Assigned</span>
+                    </div>
+                    <div style="height: 270px; position: relative;">
+                        <canvas id="chartOfficerCategories"></canvas>
                     </div>
                 </div>
             </div>
@@ -106,7 +148,7 @@
         <div class="card-modern mb-4">
             <div class="card-header-headworld d-flex justify-content-between align-items-center p-3 border-bottom">
                 <h5 class="card-title-headworld mb-0 fw-bold">
-                    <i class="bi bi-clock-history text-warning me-1"></i> My Active Work Order Queue ({{ $queue->count() }})
+                    <i class="bi bi-clock-history text-warning me-1"></i> My Active Work Order Queue (<span id="officerQueueCountBadge">{{ $queue->count() }}</span>)
                 </h5>
                 <a href="{{ route('facility.tasks.index') }}" class="btn btn-subtle btn-sm">
                     <i class="bi bi-kanban me-1"></i> Switch to Kanban Board
@@ -246,3 +288,15 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <!-- Server-Side Hydrated Payload for Officer Dashboard -->
+    <script type="application/json" id="officerDashboardPayload" data-poll-url="{{ route('facility.dashboard.data') }}">
+        {!! json_encode($metrics) !!}
+    </script>
+
+    <!-- Chart.js v4 CDN & Modular Dashboard Controllers -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="{{ asset('assets/js/dashboard-charts.js') }}"></script>
+    <script src="{{ asset('assets/js/officer-dashboard.js') }}"></script>
+@endpush

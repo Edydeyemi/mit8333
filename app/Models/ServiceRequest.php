@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
@@ -160,11 +161,37 @@ class ServiceRequest extends Model
     }
 
     /**
+     * Historical assignments for this service request.
+     */
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(ServiceRequestAssignment::class, 'service_request_id')->latest();
+    }
+
+    /**
+     * Current active assignment.
+     */
+    public function currentAssignment(): HasOne
+    {
+        return $this->hasOne(ServiceRequestAssignment::class, 'service_request_id')
+            ->where('status', 'active')
+            ->latestOfMany();
+    }
+
+    /**
      * Determine if a user can cancel this request.
      */
     public function canBeCancelledBy(User $user): bool
     {
         return $this->user_id === $user->id && in_array($this->status, ['submitted', 'assigned'], true);
+    }
+
+    /**
+     * Determine if a user can edit/update this request.
+     */
+    public function canBeEditedBy(User $user): bool
+    {
+        return $this->user_id === $user->id && $this->status === 'submitted';
     }
 
     /**

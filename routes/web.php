@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordModificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -28,8 +29,25 @@ Route::get('/', function () {
         };
     }
 
-    return redirect()->route('login');
-});
+    return view('frontend.landing');
+})->name('landing');
+
+// API Documentation & Schema Routes
+Route::get('/docs', function () {
+    return view('docs.api_docs');
+})->name('api.docs');
+
+Route::get('/docs/openapi.yaml', function () {
+    return response()->file(base_path('docs/openapi.yaml'), [
+        'Content-Type' => 'text/yaml',
+    ]);
+})->name('api.docs.openapi');
+
+Route::get('/docs/postman_collection.json', function () {
+    return response()->file(base_path('docs/postman_collection.json'), [
+        'Content-Type' => 'application/json',
+    ]);
+})->name('api.docs.postman');
 
 // Guest Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -59,6 +77,10 @@ Route::middleware('auth')->group(function () {
     // Password Modification (Authenticated)
     Route::post('/profile/password/send-otp', [PasswordModificationController::class, 'sendModificationOtp'])->name('profile.password.otp');
     Route::put('/profile/password', [PasswordModificationController::class, 'update'])->name('profile.password.update');
+
+    // Profile Photo Management
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::delete('/profile/avatar', [ProfileController::class, 'removeAvatar'])->name('profile.avatar.remove');
 
     // Central Active Notifications Endpoints
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

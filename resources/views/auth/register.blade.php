@@ -7,10 +7,14 @@
     <meta name="description" content="Register your university profile on Headworld Campus Operations.">
     <title>Register Profile | Headworld Campus Operations</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+
     <!-- Bootstrap 5 CSS Foundation -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="{{ asset('assets/font/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Custom Design Tokens & Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/variables.css') }}">
@@ -27,12 +31,9 @@
         <div class="auth-form-side" style="max-width: 680px;">
             <div class="mb-4">
                 <a href="{{ url('/') }}"
-                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3">
-                    <div class="brand-crest">H</div>
-                    <div>
-                        <div class="brand-title text-dark">HEADWORLD</div>
-                        <div class="brand-subtitle text-warning">CAMPUS OPERATIONS</div>
-                    </div>
+                    class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3"
+                    aria-label="HeadWorld Campus Operations">
+                    <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 46px; max-width: 270px;">
                 </a>
                 <h2 class="fw-bold text-navy-900 mt-1">Register University Profile</h2>
                 <p class="text-muted small">Register your student or staff profile to lodge maintenance requests and

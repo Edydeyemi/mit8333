@@ -203,6 +203,28 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
             [
+                'first_name' => 'Samuel',
+                'last_name' => 'Adebayo',
+                'email' => 'officer2@unilag.edu',
+                'mobile' => '+15551234571',
+                'password' => $defaultPassword,
+                'role' => 'officer',
+                'status' => 'active',
+                'slug' => 'samuel-adebayo-' . Str::lower(Str::random(6)),
+                'email_verified_at' => now(),
+            ],
+            [
+                'first_name' => 'Brenda',
+                'last_name' => 'Chisom',
+                'email' => 'officer3@unilag.edu',
+                'mobile' => '+15551234572',
+                'password' => $defaultPassword,
+                'role' => 'officer',
+                'status' => 'active',
+                'slug' => 'brenda-chisom-' . Str::lower(Str::random(6)),
+                'email_verified_at' => now(),
+            ],
+            [
                 'first_name' => 'Sterling',
                 'last_name' => 'Archer',
                 'email' => 'admin@in.com',
@@ -228,5 +250,8 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+
+        // 6. Seed Mapped Service Requests Across Different Stages
+        $this->call(ServiceRequestSeeder::class);
     }
 }

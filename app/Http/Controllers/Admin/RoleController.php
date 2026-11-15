@@ -48,7 +48,7 @@ class RoleController extends Controller
         $totalRoles = Role::count();
         $totalPermissions = $allPermissions->count();
 
-        return view('admin.roles.index', compact(
+        return view('admin.roles.roles', compact(
             'roles',
             'groupedPermissions',
             'allPermissions',

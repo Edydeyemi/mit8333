@@ -57,7 +57,7 @@ class AuthApiController extends Controller
         RateLimiter::clear($throttleKey);
 
         // Generate and dispatch 2FA OTP
-        $this->otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
+        $code = $this->otpService->generateOtp($user, UserOtp::TYPE_TWO_FACTOR);
 
         // Generate temporary challenge token (valid for 10 minutes)
         $challenge = Str::random(40);
@@ -65,11 +65,17 @@ class AuthApiController extends Controller
 
         AuditLog::log('api_login_2fa_dispatched', $user);
 
-        return $this->successResponse([
+        $payload = [
             'requires_2fa' => true,
             'challenge_token' => $challenge,
             'email' => $user->email,
-        ], '2FA verification code dispatched to email. Complete verification to receive access token.', 200);
+        ];
+
+        if ($this->otpService->shouldDisplayDevOtp()) {
+            $payload['dev_otp'] = $code;
+        }
+
+        return $this->successResponse($payload, '2FA verification code dispatched to email. Complete verification to receive access token.', 200);
     }
 
     /**
@@ -128,14 +134,20 @@ class AuthApiController extends Controller
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         $user = User::where('email', $request->email)->first();
+        $code = null;
 
         if ($user) {
-            $this->otpService->generateOtp($user, UserOtp::TYPE_PASSWORD_RESET, 15);
+            $code = $this->otpService->generateOtp($user, UserOtp::TYPE_PASSWORD_RESET, 15);
             AuditLog::log('api_password_reset_otp_dispatched', $user);
         }
 
+        $payload = ['email' => $request->email];
+        if ($this->otpService->shouldDisplayDevOtp() && $code !== null) {
+            $payload['dev_otp'] = $code;
+        }
+
         return $this->successResponse(
-            ['email' => $request->email],
+            $payload,
             'If your email is registered, a 6-digit recovery code has been sent.',
             200
         );
