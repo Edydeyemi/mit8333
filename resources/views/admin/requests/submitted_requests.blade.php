@@ -148,7 +148,7 @@
                 </h5>
                 <div class="d-flex align-items-center gap-2">
                     <a href="{{ route('admin.reports.export.requests', request()->all()) }}" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export XLSX
+                        <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export CSV
                     </a>
                     <span class="badge bg-secondary text-muted border">Page {{ $requests->currentPage() }} of {{ $requests->lastPage() }}</span>
                 </div>
@@ -262,7 +262,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="assignOfficerModalLabel">
-                        <i class="bi bi-person-gear text-warning me-1"></i> Delegate to Maintenance Officer
+                        <i class="bi bi-person-gear text-warning me-1"></i> Assign to Maintenance Officer
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

@@ -8,13 +8,10 @@ use App\Models\ServiceRequest;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ServiceRequestsExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class ServiceRequestsExport implements FromQuery, WithHeadings, WithMapping
 {
     /**
      * @param array<string, mixed> $filters
@@ -99,24 +96,6 @@ class ServiceRequestsExport implements FromQuery, WithHeadings, WithMapping, Sho
             $row->assignedOfficer?->name ?? 'Unassigned',
             $row->created_at?->format('Y-m-d H:i') ?? '',
             $row->resolved_at?->format('Y-m-d H:i') ?? '',
-        ];
-    }
-
-    /**
-     * Apply styles to worksheet.
-     *
-     * @return array<mixed>
-     */
-    public function styles(Worksheet $sheet): array
-    {
-        return [
-            1 => [
-                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
-                'fill' => [
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['argb' => 'FF0A192F'], // Navy 900
-                ],
-            ],
         ];
     }
 }

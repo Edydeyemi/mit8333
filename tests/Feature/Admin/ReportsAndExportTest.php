@@ -84,7 +84,7 @@ class ReportsAndExportTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_admin_can_export_service_requests_to_xlsx(): void
+    public function test_admin_can_export_service_requests_to_csv(): void
     {
         $this->actingAs($this->superAdmin);
 
@@ -93,10 +93,10 @@ class ReportsAndExportTest extends TestCase
         $response->assertStatus(200);
         $disposition = (string) $response->headers->get('content-disposition');
         $this->assertStringContainsString('headworld_service_requests_', $disposition);
-        $this->assertStringContainsString('.xlsx', $disposition);
+        $this->assertStringContainsString('.csv', $disposition);
     }
 
-    public function test_admin_can_export_officer_kpis_to_xlsx(): void
+    public function test_admin_can_export_officer_kpis_to_csv(): void
     {
         $this->actingAs($this->superAdmin);
 
@@ -105,10 +105,10 @@ class ReportsAndExportTest extends TestCase
         $response->assertStatus(200);
         $disposition = (string) $response->headers->get('content-disposition');
         $this->assertStringContainsString('headworld_officer_kpis_', $disposition);
-        $this->assertStringContainsString('.xlsx', $disposition);
+        $this->assertStringContainsString('.csv', $disposition);
     }
 
-    public function test_admin_can_export_audit_logs_to_xlsx(): void
+    public function test_admin_can_export_audit_logs_to_csv(): void
     {
         $this->actingAs($this->superAdmin);
 
@@ -117,6 +117,6 @@ class ReportsAndExportTest extends TestCase
         $response->assertStatus(200);
         $disposition = (string) $response->headers->get('content-disposition');
         $this->assertStringContainsString('headworld_audit_trail_', $disposition);
-        $this->assertStringContainsString('.xlsx', $disposition);
+        $this->assertStringContainsString('.csv', $disposition);
     }
 }

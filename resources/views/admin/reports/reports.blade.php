@@ -54,22 +54,22 @@
                 <div>
                     <span class="fw-bold text-navy-900"><i
                             class="bi bi-file-earmark-spreadsheet-fill text-success me-1"></i> Data Export Center
-                        (XLSX)</span>
-                    <small class="text-muted d-block">Download certified spreadsheets formatted for institutional
+                        (CSV)</span>
+                    <small class="text-muted d-block">Download certified CSV datasets formatted for institutional
                         reporting</small>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('admin.reports.export.requests') }}"
                         class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-download"></i> All Requests (.xlsx)
+                        <i class="bi bi-download"></i> All Requests (.csv)
                     </a>
                     <a href="{{ route('admin.reports.export.officers') }}"
                         class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-download"></i> Officer KPIs (.xlsx)
+                        <i class="bi bi-download"></i> Officer KPIs (.csv)
                     </a>
                     <a href="{{ route('admin.reports.export.audits') }}"
                         class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-download"></i> Audit Trail (.xlsx)
+                        <i class="bi bi-download"></i> Audit Trail (.csv)
                     </a>
                 </div>
             </div>

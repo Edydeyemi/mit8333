@@ -189,9 +189,9 @@
               style="width: 48px; height: 48px; line-height: 48px; text-align: center; border-radius: 12px; font-size: 20px;">
               <i class="bi bi-bar-chart-fill"></i>
             </div>
-            <h5 class="fw-bold text-navy-900 mb-2">Executive Analytics & XLSX</h5>
+            <h5 class="fw-bold text-navy-900 mb-2">Executive Analytics & CSV</h5>
             <p class="text-muted small mb-0">Deans and facility directors view incident recurrence by building,
-              bottleneck analysis, and export certified reports in formatted Excel spreadsheets.</p>
+              bottleneck analysis, and export certified reports in CSV format.</p>
           </div>
         </div>
 

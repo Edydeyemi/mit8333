@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Headworld Campus Facility Management REST API
   description: |
-    Comprehensive programmatic RESTful interface for EdWorld / Headworld Campus Operations.
+    Comprehensive programmatic RESTful interface for Headworld Campus Operations.
     Allows students, faculty, maintenance technicians, and administrators to lodge, triage,
     track, and resolve campus infrastructure service requests.
   version: 1.0.0

@@ -132,7 +132,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Export service requests to Excel XLSX.
+     * Export service requests to CSV.
      */
     public function exportRequests(Request $request): BinaryFileResponse
     {
@@ -141,7 +141,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Export officer KPIs to Excel XLSX.
+     * Export officer KPIs to CSV.
      */
     public function exportOfficers(): BinaryFileResponse
     {
@@ -150,7 +150,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Export audit logs to Excel XLSX (Service Requests Only).
+     * Export audit logs to CSV (Service Requests Only).
      */
     public function exportAudits(Request $request): BinaryFileResponse
     {
