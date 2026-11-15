@@ -8,7 +8,7 @@ info:
   version: 1.0.0
   contact:
     name: Headworld Operations Command
-    email: operations@headworld.mit.edu
+    email: operations@headworld.com
 servers:
   - url: /api/v1
     description: Current Environment API Base
@@ -132,7 +132,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: student@headworld.mit.edu
+                  example: student@headworld.com
                 password:
                   type: string
                   format: password
