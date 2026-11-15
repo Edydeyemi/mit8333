@@ -116,7 +116,7 @@ class ReportController extends Controller
             });
         }
 
-        $auditLogs = $auditQuery->latest()->paginate(20)->withQueryString();
+        $auditLogs = $auditQuery->orderByDesc('created_at')->orderByDesc('id')->paginate(20)->withQueryString();
         $auditUsers = User::orderBy('first_name')->get(['id', 'first_name', 'last_name', 'email']);
 
         return view('admin.reports.reports', [

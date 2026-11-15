@@ -5,11 +5,12 @@
 @section('header_title')
     <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2">
         <div>
-            <h5 class="fw-bold mb-0 text-navy-900">Campus Resident Portal</h5>
+            <h5 class="fw-bold mb-0 text-navy-900">Student Dashboard</h5>
             <small class="text-muted">{{ date('l, F j, Y') }} &bull; Maintenance & Fault Logging Desk</small>
         </div>
         <div id="userSyncBadge">
-            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 d-inline-flex align-items-center gap-1">
+            <span
+                class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 d-inline-flex align-items-center gap-1">
                 <span class="status-dot bg-success"></span> Live Syncing
             </span>
         </div>
@@ -23,7 +24,8 @@
             style="background: linear-gradient(135deg, var(--navy-900), var(--navy-850)); color: #ffffff;">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <span class="badge bg-warning text-dark fw-bold mb-2 text-uppercase letter-spacing-1">Facility Concierge</span>
+                    <span class="badge bg-warning text-dark fw-bold mb-2 text-uppercase letter-spacing-1">Facility
+                        Concierge</span>
                     <h2 class="fw-bold mb-2 text-white">Welcome back, {{ $user->first_name ?: 'Resident' }}</h2>
                     <p class="text-white-50 mb-3 max-w-600">
                         Notice an electrical fault, plumbing leak, damaged furniture, or classroom equipment issue? Lodge
@@ -306,8 +308,8 @@
 @push('scripts')
     <!-- Server-Side Hydrated Payload for User Dashboard -->
     <script type="application/json" id="userDashboardPayload" data-poll-url="{{ route('user.dashboard.data') }}">
-        {!! json_encode($metrics) !!}
-    </script>
+            {!! json_encode($metrics) !!}
+        </script>
 
     <!-- Chart.js v4 CDN & Modular Dashboard Controllers -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>

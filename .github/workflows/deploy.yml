@@ -111,6 +111,7 @@ jobs:
             php artisan migrate --force
             php artisan optimize:clear
             php artisan optimize
+            php artisan queue:restart
 
             echo $(date) >> timestamp.txt
 

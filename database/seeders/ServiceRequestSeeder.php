@@ -11,7 +11,12 @@ use App\Models\ServiceRequestAttachment;
 use App\Models\ServiceRequestStatusUpdate;
 use App\Models\User;
 use Carbon\Carbon;
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ServiceRequestSeeder extends Seeder
 {
@@ -20,16 +25,20 @@ class ServiceRequestSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Fetch reference users
-        $student = User::where('email', 'student@unilag.edu')->first();
-        $staff = User::where('email', 'staff@unilag.edu')->first();
-        $demoUser = User::where('email', 'user@in.com')->first();
-        $admin = User::where('email', 'admin@in.com')->first();
+        // 1. Fetch existing active users, officers, and admins from the database
+        $requesters = User::where('role', 'user')->where('status', 'active')->get();
+        $officers = User::where('role', 'officer')->where('status', 'active')->get();
+        $admins = User::whereIn('role', ['super_admin', 'admin'])->where('status', 'active')->get();
+
+        $demoUser = User::where('email', 'user@headworld.com')->first() ?? $requesters->first();
+        $student = $requesters->first(fn (User $u): bool => str_contains($u->email, 'student')) ?? $requesters->first();
+        $staff = $requesters->first(fn (User $u): bool => str_contains($u->email, 'staff')) ?? $requesters->skip(1)->first() ?? $student;
+        $admin = User::where('email', 'edward@headworld.com')->first() ?? $admins->first();
 
         // 2. Fetch reference officers
-        $officer1 = User::where('email', 'officer@unilag.edu')->first();
-        $officer2 = User::where('email', 'officer2@unilag.edu')->first() ?? $officer1;
-        $officer3 = User::where('email', 'officer3@unilag.edu')->first() ?? $officer1;
+        $officer1 = User::where('email', 'officer@headworld.com')->first() ?? $officers->first();
+        $officer2 = User::where('email', 'officer2@headworld.com')->first() ?? $officers->skip(1)->first() ?? $officer1;
+        $officer3 = User::where('email', 'officer3@headworld.com')->first() ?? $officers->skip(2)->first() ?? $officer1;
 
         if (!$student || !$officer1 || !$admin) {
             $this->command?->warn('Required users not found. Run DatabaseSeeder users step first.');
@@ -775,6 +784,473 @@ class ServiceRequestSeeder extends Seeder
                 );
             }
         }
+
+        // 6. Seed 120 Faker-generated requests pulling existing DB users & officers (idempotent guard)
+        $structuredSlugs = array_column($requestsData, 'slug');
+        if (ServiceRequest::whereNotIn('slug', $structuredSlugs)->count() >= 120) {
+            return;
+        }
+
+        $requesters = User::where('role', 'user')->where('status', 'active')->get();
+        $officers = User::where('role', 'officer')->where('status', 'active')->get();
+        $admins = User::whereIn('role', ['super_admin', 'admin'])->where('status', 'active')->get();
+        $activeCategories = ServiceCategory::where('is_active', true)->get();
+
+        if ($requesters->isEmpty() || $officers->isEmpty() || $admins->isEmpty() || $activeCategories->isEmpty()) {
+            $this->command?->warn('Insufficient active users, officers, admins, or categories for Faker service requests.');
+            return;
+        }
+
+        try {
+            $this->seedFakerRequests($requesters, $officers, $admins, $activeCategories);
+        } finally {
+            Auth::logout();
+        }
+    }
+
+    /**
+     * Generate 120 realistic service requests across all closure stages with reassignments and audit logs.
+     *
+     * @param  Collection<int, User>  $requesters
+     * @param  Collection<int, User>  $officers
+     * @param  Collection<int, User>  $admins
+     * @param  Collection<int, ServiceCategory>  $categories
+     */
+    private function seedFakerRequests(
+        Collection $requesters,
+        Collection $officers,
+        Collection $admins,
+        Collection $categories
+    ): void {
+        $faker = FakerFactory::create('en_NG');
+
+        $stagePlan = [
+            'submitted' => 15,
+            'assigned' => 18,
+            'in_progress' => 22,
+            'on_hold' => 12,
+            'resolved' => 35,
+            'cancelled' => 10,
+            'rejected' => 8,
+        ];
+
+        $buildings = [
+            'Senate Building',
+            'Faculty of Engineering',
+            'Faculty of Science',
+            'Main University Library',
+            'ICT & CBT Center',
+            'Moremi Hall (Female Hostel)',
+            'Jaja Hall (Male Hostel)',
+            'Mariere Hall (Male Hostel)',
+            'Makama Bida Hall',
+            'Faculty of Law',
+            'College of Medicine Annex',
+            'New Lecture Theatre Complex',
+        ];
+
+        $wings = [
+            'Ground Floor East Wing',
+            'Ground Floor West Wing',
+            '1st Floor North Block',
+            '2nd Floor South Wing',
+            '3rd Floor Central Corridor',
+            'Annex Block B',
+        ];
+
+        $priorities = ['low', 'medium', 'high', 'emergency'];
+
+        $categoryTemplates = [
+            'faulty-electricity-lighting' => [
+                'Power Outage and Tripped Breaker in ',
+                'Flickering Fluorescent Fixtures in ',
+                'Exposed Wall Socket Conduit in ',
+                'Damaged Distribution Panel Switch in ',
+            ],
+            'damaged-furniture-classroom-fixtures' => [
+                'Broken Lecture Hall Desks and Chairs in ',
+                'Detached Whiteboard Frame in ',
+                'Damaged Entrance Door Lock and Hinges in ',
+                'Broken Auditorium Seating Row in ',
+            ],
+            'plumbing-drainage-water-leakage' => [
+                'Burst Overhead Water Pipe in ',
+                'Blocked Restroom Floor Drain in ',
+                'Leaking Sink Valve and Cistern in ',
+                'Low Water Pressure Across Washrooms in ',
+            ],
+            'wifi-network-it-infrastructure' => [
+                'Campus Wi-Fi Access Point Offline in ',
+                'Damaged Ethernet Wall Port in ',
+                'Intermittent Network Switch Dropout in ',
+                'Fiber Patch Cord Fault in ',
+            ],
+            'classroom-laboratory-equipment-issues' => [
+                'Malfunctioning Overhead Projector in ',
+                'Faulty Lab Fume Extractor Hood in ',
+                'Split-Unit AC Not Cooling in ',
+                'Broken Podium Audio Amplifier in ',
+            ],
+            'hostel-residential-facility-maintenance' => [
+                'Damaged Hostel Window Louvers in ',
+                'Broken Wardrobe Hinge and Latch in ',
+                'Courtyard Security Floodlight Outage in ',
+                'Ceiling Water Seepage After Rain in ',
+            ],
+        ];
+
+        foreach ($stagePlan as $targetStage => $count) {
+            for ($i = 0; $i < $count; $i++) {
+                $requester = $requesters->random();
+                $admin = $admins->random();
+                $category = $categories->random();
+                $building = $faker->randomElement($buildings);
+                $wing = $faker->randomElement($wings);
+                $room = 'Room ' . $faker->numberBetween(101, 420);
+
+                $templates = $categoryTemplates[$category->slug] ?? ['Facility Maintenance Issue Reported in '];
+                $title = $faker->randomElement($templates) . $building . ' (' . $room . ')';
+
+                $this->createRequestWithLifecycle(
+                    $faker,
+                    $requester,
+                    $admin,
+                    $officers,
+                    $category,
+                    $targetStage,
+                    $faker->randomElement($priorities),
+                    $title,
+                    $building,
+                    $wing,
+                    $room
+                );
+            }
+        }
+    }
+
+    /**
+     * Create a single service request and step it through its lifecycle so Auditable logs each actor & transition.
+     *
+     * @param  Collection<int, User>  $officers
+     */
+    private function createRequestWithLifecycle(
+        Generator $faker,
+        User $requester,
+        User $admin,
+        Collection $officers,
+        ServiceCategory $category,
+        string $targetStage,
+        string $priority,
+        string $title,
+        string $building,
+        string $wing,
+        string $room
+    ): void {
+        $createdAt = Carbon::now()->subDays($faker->numberBetween(1, 45))->subHours($faker->numberBetween(0, 23));
+
+        // Step 1: Requester submits the ticket
+        Auth::setUser($requester);
+        $request = ServiceRequest::create([
+            'slug' => 'sr-' . Str::uuid(),
+            'user_id' => $requester->id,
+            'service_category_id' => $category->id,
+            'title' => $title,
+            'description' => $faker->paragraph(2) . ' Reported at ' . $building . ', ' . $wing . ', ' . $room . '.',
+            'priority' => $priority,
+            'status' => 'submitted',
+            'building' => $building,
+            'wing_floor' => $wing,
+            'room_number' => $room,
+            'created_at' => $createdAt,
+            'updated_at' => $createdAt,
+        ]);
+
+        if ($faker->boolean(70)) {
+            ServiceRequestAttachment::create([
+                'service_request_id' => $request->id,
+                'file_name' => 'evidence_' . Str::lower(Str::random(8)) . '.jpg',
+                'file_path' => 'evidence/photos/' . Str::uuid() . '.jpg',
+                'file_type' => 'image/jpeg',
+                'file_size' => $faker->numberBetween(250_000, 3_500_000),
+                'type' => 'evidence',
+                'uploaded_by' => $requester->id,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+        }
+
+        if ($targetStage === 'submitted') {
+            return;
+        }
+
+        // Step 2: Rejected directly by Admin
+        if ($targetStage === 'rejected') {
+            $rejectedAt = $createdAt->copy()->addHours($faker->numberBetween(2, 24));
+            Auth::setUser($admin);
+            $request->update([
+                'status' => 'rejected',
+                'updated_at' => $rejectedAt,
+            ]);
+
+            $this->recordStatusUpdate(
+                $request->id,
+                $admin->id,
+                'submitted',
+                'rejected',
+                $faker->randomElement([
+                    'Duplicate request already logged for this location.',
+                    'Out of facility maintenance scope; referred to ICT/Asset Registry.',
+                    'Insufficient location details provided; please resubmit with room number.',
+                ]),
+                $rejectedAt
+            );
+
+            return;
+        }
+
+        // Some cancelled tickets are cancelled before assignment
+        $assignBeforeCancel = $targetStage === 'cancelled' && $faker->boolean(50);
+        if ($targetStage === 'cancelled' && !$assignBeforeCancel) {
+            $cancelledAt = $createdAt->copy()->addHours($faker->numberBetween(1, 12));
+            $reason = $faker->randomElement([
+                'Issue resolved on its own before dispatch.',
+                'Submitted under wrong building wing by mistake.',
+                'No longer required; class relocated.',
+            ]);
+
+            Auth::setUser($requester);
+            $request->update([
+                'status' => 'cancelled',
+                'cancelled_at' => $cancelledAt,
+                'cancellation_reason' => $reason,
+                'updated_at' => $cancelledAt,
+            ]);
+
+            $this->recordStatusUpdate($request->id, $requester->id, 'submitted', 'cancelled', $reason, $cancelledAt);
+
+            return;
+        }
+
+        // Step 3: Admin assigns Officer A
+        $assignedAt = $createdAt->copy()->addHours($faker->numberBetween(1, 8));
+        $officerA = $officers->random();
+
+        Auth::setUser($admin);
+        $request->update([
+            'status' => 'assigned',
+            'assigned_officer_id' => $officerA->id,
+            'assigned_at' => $assignedAt,
+            'updated_at' => $assignedAt,
+        ]);
+
+        $activeAssignment = ServiceRequestAssignment::create([
+            'service_request_id' => $request->id,
+            'officer_id' => $officerA->id,
+            'assigned_by_id' => $admin->id,
+            'assigned_at' => $assignedAt,
+            'status' => 'active',
+            'notes' => 'Initial dispatch to ' . $officerA->name . '.',
+            'created_at' => $assignedAt,
+            'updated_at' => $assignedAt,
+        ]);
+
+        $this->recordStatusUpdate(
+            $request->id,
+            $admin->id,
+            'submitted',
+            'assigned',
+            'Dispatched to ' . $officerA->name . ' for inspection and remediation.',
+            $assignedAt
+        );
+
+        $currentOfficer = $officerA;
+        $lastTransitionAt = $assignedAt;
+
+        // Step 4: Optional Reassignment (~30% of assigned+ tickets)
+        if ($targetStage !== 'cancelled' && $officers->count() > 1 && $faker->boolean(30)) {
+            $reassignAt = $assignedAt->copy()->addHours($faker->numberBetween(1, 6));
+            $officerB = $officers->where('id', '!=', $officerA->id)->random();
+
+            Auth::setUser($admin);
+            $activeAssignment->update([
+                'status' => 'reassigned',
+                'unassigned_at' => $reassignAt,
+                'notes' => 'Reassigned due to workload balancing / shift handover.',
+                'updated_at' => $reassignAt,
+            ]);
+
+            $activeAssignment = ServiceRequestAssignment::create([
+                'service_request_id' => $request->id,
+                'officer_id' => $officerB->id,
+                'assigned_by_id' => $admin->id,
+                'assigned_at' => $reassignAt,
+                'status' => 'active',
+                'notes' => 'Reassigned from ' . $officerA->name . ' to ' . $officerB->name . '.',
+                'created_at' => $reassignAt,
+                'updated_at' => $reassignAt,
+            ]);
+
+            $request->update([
+                'assigned_officer_id' => $officerB->id,
+                'assigned_at' => $reassignAt,
+                'updated_at' => $reassignAt,
+            ]);
+
+            $this->recordStatusUpdate(
+                $request->id,
+                $admin->id,
+                'assigned',
+                'assigned',
+                'Ticket reassigned from ' . $officerA->name . ' to ' . $officerB->name . '.',
+                $reassignAt
+            );
+
+            $currentOfficer = $officerB;
+            $lastTransitionAt = $reassignAt;
+        }
+
+        // Cancelled after assignment
+        if ($targetStage === 'cancelled') {
+            $cancelledAt = $lastTransitionAt->copy()->addHours($faker->numberBetween(1, 10));
+            $reason = 'Requester cancelled ticket after initial dispatch.';
+
+            Auth::setUser($requester);
+            $request->update([
+                'status' => 'cancelled',
+                'cancelled_at' => $cancelledAt,
+                'cancellation_reason' => $reason,
+                'updated_at' => $cancelledAt,
+            ]);
+
+            $activeAssignment->update([
+                'status' => 'cancelled',
+                'unassigned_at' => $cancelledAt,
+                'updated_at' => $cancelledAt,
+            ]);
+
+            $this->recordStatusUpdate($request->id, $requester->id, 'assigned', 'cancelled', $reason, $cancelledAt);
+
+            return;
+        }
+
+        if ($targetStage === 'assigned') {
+            return;
+        }
+
+        // Step 5: Officer moves ticket to In Progress
+        $inProgressAt = $lastTransitionAt->copy()->addHours($faker->numberBetween(1, 8));
+        Auth::setUser($currentOfficer);
+        $request->update([
+            'status' => 'in_progress',
+            'updated_at' => $inProgressAt,
+        ]);
+
+        $this->recordStatusUpdate(
+            $request->id,
+            $currentOfficer->id,
+            'assigned',
+            'in_progress',
+            'Officer arrived on site and commenced diagnostic/repair work.',
+            $inProgressAt
+        );
+
+        if ($targetStage === 'in_progress') {
+            return;
+        }
+
+        // Step 6: On Hold (either final stage or intermediate before resolution)
+        $previousStage = 'in_progress';
+        $currentTime = $inProgressAt;
+
+        if ($targetStage === 'on_hold' || ($targetStage === 'resolved' && $faker->boolean(25))) {
+            $onHoldAt = $inProgressAt->copy()->addHours($faker->numberBetween(2, 12));
+            Auth::setUser($currentOfficer);
+            $request->update([
+                'status' => 'on_hold',
+                'updated_at' => $onHoldAt,
+            ]);
+
+            $this->recordStatusUpdate(
+                $request->id,
+                $currentOfficer->id,
+                'in_progress',
+                'on_hold',
+                $faker->randomElement([
+                    'Awaiting replacement spare parts from central stores.',
+                    'Scheduled for after-hours power isolation window.',
+                    'Pending vendor component delivery.',
+                ]),
+                $onHoldAt
+            );
+
+            $previousStage = 'on_hold';
+            $currentTime = $onHoldAt;
+
+            if ($targetStage === 'on_hold') {
+                return;
+            }
+        }
+
+        // Step 7: Resolved
+        $resolvedAt = $currentTime->copy()->addHours($faker->numberBetween(2, 24));
+        Auth::setUser($currentOfficer);
+        $request->update([
+            'status' => 'resolved',
+            'resolved_at' => $resolvedAt,
+            'updated_at' => $resolvedAt,
+        ]);
+
+        $activeAssignment->update([
+            'status' => 'completed',
+            'unassigned_at' => $resolvedAt,
+            'updated_at' => $resolvedAt,
+        ]);
+
+        $resolutionUpdate = $this->recordStatusUpdate(
+            $request->id,
+            $currentOfficer->id,
+            $previousStage,
+            'resolved',
+            'Fault fully rectified, safety-tested, and area restored to normal operation.',
+            $resolvedAt
+        );
+
+        if ($faker->boolean(80)) {
+            ServiceRequestAttachment::create([
+                'service_request_id' => $request->id,
+                'status_update_id' => $resolutionUpdate->id,
+                'file_name' => 'resolution_' . Str::lower(Str::random(8)) . '.jpg',
+                'file_path' => 'evidence/resolutions/' . Str::uuid() . '.jpg',
+                'file_type' => 'image/jpeg',
+                'file_size' => $faker->numberBetween(250_000, 2_500_000),
+                'type' => 'resolution_proof',
+                'uploaded_by' => $currentOfficer->id,
+                'created_at' => $resolvedAt,
+                'updated_at' => $resolvedAt,
+            ]);
+        }
+    }
+
+    /**
+     * Persist a ServiceRequestStatusUpdate record.
+     */
+    private function recordStatusUpdate(
+        int $serviceRequestId,
+        int $userId,
+        ?string $previousStatus,
+        string $status,
+        string $notes,
+        Carbon $timestamp
+    ): ServiceRequestStatusUpdate {
+        return ServiceRequestStatusUpdate::create([
+            'service_request_id' => $serviceRequestId,
+            'user_id' => $userId,
+            'previous_status' => $previousStatus,
+            'status' => $status,
+            'notes' => $notes,
+            'created_at' => $timestamp,
+            'updated_at' => $timestamp,
+        ]);
     }
 }
 

@@ -42,11 +42,11 @@ class OtpService
             'expires_at' => now()->addMinutes($durationMinutes),
         ]);
 
-        // Send Email notification
+        // Queue Email notification (non-blocking)
         try {
-            Mail::to($user->email)->send(new OtpNotificationMail($user, $code, $type, $durationMinutes));
-        } catch (Exception $e) {
-            Log::error("Failed to send OTP email to {$user->email}: " . $e->getMessage());
+            Mail::to($user->email)->queue(new OtpNotificationMail($user, $code, $type, $durationMinutes));
+        } catch (\Throwable $e) {
+            Log::error("Failed to queue OTP email to {$user->email}: " . $e->getMessage());
         }
 
         return $code;

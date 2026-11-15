@@ -50,9 +50,9 @@ class ServiceRequestSeederTest extends TestCase
 
     public function test_service_requests_are_mapped_to_users(): void
     {
-        $student = User::where('email', 'student@unilag.edu')->firstOrFail();
-        $staff = User::where('email', 'staff@unilag.edu')->firstOrFail();
-        $demoUser = User::where('email', 'user@in.com')->firstOrFail();
+        $student = User::where('role', 'user')->where('email', 'like', '%student%')->firstOrFail();
+        $staff = User::where('role', 'user')->where('email', 'like', '%staff%')->firstOrFail();
+        $demoUser = User::where('email', 'user@headworld.com')->firstOrFail();
 
         $this->assertGreaterThanOrEqual(1, ServiceRequest::where('user_id', $student->id)->count());
         $this->assertGreaterThanOrEqual(1, ServiceRequest::where('user_id', $staff->id)->count());
@@ -61,9 +61,9 @@ class ServiceRequestSeederTest extends TestCase
 
     public function test_service_requests_are_assigned_to_different_officers(): void
     {
-        $officer1 = User::where('email', 'officer@unilag.edu')->firstOrFail();
-        $officer2 = User::where('email', 'officer2@unilag.edu')->firstOrFail();
-        $officer3 = User::where('email', 'officer3@unilag.edu')->firstOrFail();
+        $officer1 = User::where('email', 'officer@headworld.com')->firstOrFail();
+        $officer2 = User::where('email', 'officer2@headworld.com')->firstOrFail();
+        $officer3 = User::where('email', 'officer3@headworld.com')->firstOrFail();
 
         $this->assertGreaterThanOrEqual(1, ServiceRequest::where('assigned_officer_id', $officer1->id)->count());
         $this->assertGreaterThanOrEqual(1, ServiceRequest::where('assigned_officer_id', $officer2->id)->count());

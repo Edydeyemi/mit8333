@@ -8,6 +8,8 @@ use App\Models\Admin\Permission;
 use App\Models\Admin\Role;
 use App\Models\ServiceCategory;
 use App\Models\User;
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -155,13 +157,13 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Seed Demo Users
-        $defaultPassword = Hash::make('password');
+        $defaultPassword = Hash::make('MivaMIT@1106');
 
         $users = [
             [
                 'first_name' => 'Demo',
                 'last_name' => 'User',
-                'email' => 'user@in.com',
+                'email' => 'user@headworld.com',
                 'mobile' => '+805551234567',
                 'password' => $defaultPassword,
                 'role' => 'user',
@@ -170,31 +172,9 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
             [
-                'first_name' => 'Alexander',
-                'last_name' => 'Cole',
-                'email' => 'student@unilag.edu',
-                'mobile' => '+15551234567',
-                'password' => $defaultPassword,
-                'role' => 'user',
-                'status' => 'active',
-                'slug' => 'alexander-cole-' . Str::lower(Str::random(6)),
-                'email_verified_at' => now(),
-            ],
-            [
-                'first_name' => 'Eleanor',
-                'last_name' => 'Hughes',
-                'email' => 'staff@unilag.edu',
-                'mobile' => '+15551234568',
-                'password' => $defaultPassword,
-                'role' => 'user',
-                'status' => 'active',
-                'slug' => 'eleanor-hughes-' . Str::lower(Str::random(6)),
-                'email_verified_at' => now(),
-            ],
-            [
-                'first_name' => 'Marcus',
-                'last_name' => 'Vance',
-                'email' => 'officer@unilag.edu',
+                'first_name' => 'Officer',
+                'last_name' => 'Gabriel',
+                'email' => 'officer@headworld.com',
                 'mobile' => '+15551234569',
                 'password' => $defaultPassword,
                 'role' => 'officer',
@@ -205,7 +185,7 @@ class DatabaseSeeder extends Seeder
             [
                 'first_name' => 'Samuel',
                 'last_name' => 'Adebayo',
-                'email' => 'officer2@unilag.edu',
+                'email' => 'officer2@headworld.com',
                 'mobile' => '+15551234571',
                 'password' => $defaultPassword,
                 'role' => 'officer',
@@ -216,7 +196,7 @@ class DatabaseSeeder extends Seeder
             [
                 'first_name' => 'Brenda',
                 'last_name' => 'Chisom',
-                'email' => 'officer3@unilag.edu',
+                'email' => 'officer3@headworld.com',
                 'mobile' => '+15551234572',
                 'password' => $defaultPassword,
                 'role' => 'officer',
@@ -225,9 +205,9 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
             [
-                'first_name' => 'Sterling',
-                'last_name' => 'Archer',
-                'email' => 'admin@in.com',
+                'first_name' => 'Edward',
+                'last_name' => 'Babatunde',
+                'email' => 'edward@headworld.com',
                 'mobile' => '+15551234570',
                 'password' => $defaultPassword,
                 'role' => 'super_admin',
@@ -251,7 +231,66 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 6. Seed Mapped Service Requests Across Different Stages
+        // 6. Seed Faker Users (Nigeria Locale)
+        $faker = FakerFactory::create('en_NG');
+        $fakerPassword = Hash::make('MivaMIT@1106');
+
+        $fakerGroups = [
+            ['role' => 'user', 'count' => 100, 'domain' => 'student.headworld.com'],
+            ['role' => 'officer', 'count' => 30, 'domain' => 'officer.headworld.com'],
+            ['role' => 'user', 'count' => 10, 'domain' => 'staff.headworld.com'],
+            ['role' => 'data_entry', 'count' => 5, 'domain' => 'dataentry.headworld.com'],
+        ];
+
+        foreach ($fakerGroups as $group) {
+            $this->seedFakerUsers(
+                $faker,
+                $rolesMap,
+                $group['role'],
+                $group['count'],
+                $fakerPassword,
+                $group['domain']
+            );
+        }
+
+        // 7. Seed Mapped Service Requests Across Different Stages
         $this->call(ServiceRequestSeeder::class);
+    }
+
+    /**
+     * Generate Faker users for a specific role and attach their pivot role.
+     *
+     * @param  array<string, Role>  $rolesMap
+     */
+    private function seedFakerUsers(
+        Generator $faker,
+        array $rolesMap,
+        string $roleSlug,
+        int $count,
+        string $passwordHash,
+        string $emailDomain
+    ): void {
+        for ($i = 0; $i < $count; $i++) {
+            $firstName = $faker->firstName();
+            $lastName = $faker->lastName();
+
+            $user = User::forceCreate([
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => Str::lower($faker->unique()->userName()) . '@' . $emailDomain,
+                'mobile' => $faker->unique()->phoneNumber(),
+                'password' => $passwordHash,
+                'role' => $roleSlug,
+                'status' => 'active',
+                'slug' => Str::slug("{$firstName}-{$lastName}") . '-' . Str::lower(Str::random(6)),
+                'email_verified_at' => now(),
+            ]);
+
+            if (isset($rolesMap[$roleSlug])) {
+                $user->roles()->syncWithoutDetaching([
+                    $rolesMap[$roleSlug]->id => ['created_by' => 'system'],
+                ]);
+            }
+        }
     }
 }
