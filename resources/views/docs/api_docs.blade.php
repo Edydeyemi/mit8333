@@ -11,7 +11,7 @@
   <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
 
   <!-- Bootstrap 5 CSS Foundation -->
-  <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -28,7 +28,8 @@
   <nav class="landing-nav position-static bg-white border-bottom py-3">
     <div class="container d-flex align-items-center justify-content-between">
       <a href="{{ url('/') }}" class="brand-logo text-decoration-none" aria-label="HeadWorld Campus Operations">
-        <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 42px; max-width: 260px;">
+        <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img"
+          style="height: 42px; max-width: 260px;">
       </a>
 
       <div class="d-flex align-items-center gap-3">

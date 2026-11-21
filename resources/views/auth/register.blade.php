@@ -12,7 +12,7 @@
     <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
 
     <!-- Bootstrap 5 CSS Foundation -->
-    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -33,7 +33,8 @@
                 <a href="{{ url('/') }}"
                     class="d-inline-flex align-items-center gap-2 text-decoration-none text-navy-900 mb-3"
                     aria-label="HeadWorld Campus Operations">
-                    <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management" class="brand-logo-img" style="height: 46px; max-width: 270px;">
+                    <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="HeadWorld Facility Management"
+                        class="brand-logo-img" style="height: 46px; max-width: 270px;">
                 </a>
                 <h2 class="fw-bold text-navy-900 mt-1">Register University Profile</h2>
                 <p class="text-muted small">Register your student or staff profile to lodge maintenance requests and

@@ -12,7 +12,7 @@
     <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
 
     <!-- Bootstrap 5 CSS Foundation -->
-    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -65,62 +65,62 @@
             <div class="sidebar-nav">
                 {{-- 1. Operations Command (Super Admin, Admin, Data Entry) --}}
                 @canany(['reports.view', 'tasks.assign', 'categories.view', 'users.view', 'roles.view'])
-                    <div class="nav-section-title">Operations Command</div>
-                    @can('reports.view')
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                            <i class="bi bi-speedometer2"></i>
-                            <span>Executive Overview</span>
-                        </a>
-                    @endcan
+                <div class="nav-section-title">Operations Command</div>
+                @can('reports.view')
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="nav-link-custom {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Executive Overview</span>
+                    </a>
+                @endcan
 
-                    @canany(['tasks.assign', 'tasks.reassign', 'reports.view'])
-                        <a href="{{ route('admin.requests.index') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
-                            <i class="bi bi-journal-text"></i>
-                            <span>Dispatch & Requests</span>
-                        </a>
-                    @endcan
+                @canany(['tasks.assign', 'tasks.reassign', 'reports.view'])
+                <a href="{{ route('admin.requests.index') }}"
+                    class="nav-link-custom {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Dispatch & Requests</span>
+                </a>
+                @endcan
 
-                    @canany(['categories.view', 'categories.manage'])
-                        <a href="{{ route('admin.categories.index') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                            <i class="bi bi-collection-fill"></i>
-                            <span>Service Categories</span>
-                        </a>
-                    @endcan
+                @canany(['categories.view', 'categories.manage'])
+                <a href="{{ route('admin.categories.index') }}"
+                    class="nav-link-custom {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <i class="bi bi-collection-fill"></i>
+                    <span>Service Categories</span>
+                </a>
+                @endcan
 
-                    @canany(['users.view', 'users.manage', 'officers.add', 'officers.modify'])
-                        <a href="{{ route('admin.users.index') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <i class="bi bi-people-fill"></i>
-                            <span>User Directory</span>
-                        </a>
-                    @endcan
+                @canany(['users.view', 'users.manage', 'officers.add', 'officers.modify'])
+                <a href="{{ route('admin.users.index') }}"
+                    class="nav-link-custom {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <i class="bi bi-people-fill"></i>
+                    <span>User Directory</span>
+                </a>
+                @endcan
 
-                    @canany(['roles.view', 'roles.manage'])
-                        <a href="{{ route('admin.roles.index') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
-                            <i class="bi bi-shield-lock-fill"></i>
-                            <span>Roles & Permissions</span>
-                        </a>
-                    @endcan
+                @canany(['roles.view', 'roles.manage'])
+                <a href="{{ route('admin.roles.index') }}"
+                    class="nav-link-custom {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Roles & Permissions</span>
+                </a>
+                @endcan
 
-                    @can('reports.view')
-                        <a href="{{ route('admin.reports.index') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-                            <i class="bi bi-file-earmark-bar-graph-fill"></i>
-                            <span>Analytics & Audit</span>
-                        </a>
-                    @endcan
+                @can('reports.view')
+                    <a href="{{ route('admin.reports.index') }}"
+                        class="nav-link-custom {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                        <span>Analytics & Audit</span>
+                    </a>
+                @endcan
 
-                    @canany(['reports.view', 'tasks.assign'])
-                        <a href="{{ route('admin.notifications.index') }}"
-                            class="nav-link-custom {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
-                            <i class="bi bi-bell-fill"></i>
-                            <span>Notifications Center</span>
-                            <span class="nav-badge d-none" id="sidebarNotificationBadge">0</span>
-                        </a>
+                @canany(['reports.view', 'tasks.assign'])
+                    <a href="{{ route('admin.notifications.index') }}"
+                        class="nav-link-custom {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                        <i class="bi bi-bell-fill"></i>
+                        <span>Notifications Center</span>
+                        <span class="nav-badge d-none" id="sidebarNotificationBadge">0</span>
+                    </a>
                     @endcan
                 @endcanany
 
@@ -215,8 +215,10 @@
                         <i class="bi bi-list"></i>
                     </button>
                     <!-- Mobile / Tablet Brand Mark Header Shortcut -->
-                    <a href="{{ $brandRoute }}" class="d-flex align-items-center text-decoration-none me-2 d-lg-none" aria-label="HeadWorld Home">
-                        <img src="{{ asset('assets/images/logo-mark.svg') }}" alt="HeadWorld Crest" style="height: 32px; width: 32px;" class="brand-logo-mark">
+                    <a href="{{ $brandRoute }}" class="d-flex align-items-center text-decoration-none me-2 d-lg-none"
+                        aria-label="HeadWorld Home">
+                        <img src="{{ asset('assets/images/logo-mark.svg') }}" alt="HeadWorld Crest"
+                            style="height: 32px; width: 32px;" class="brand-logo-mark">
                     </a>
                     @hasSection('header_title')
                         @yield('header_title')
@@ -285,9 +287,10 @@
 
                     <!-- User Profile Avatar & Actions Dropdown -->
                     <div class="dropdown" id="headerUserDropdown">
-                        <button type="button" class="btn btn-subtle p-0 rounded-circle border-0 d-flex align-items-center"
-                            id="userDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User account menu"
-                            style="width: 38px; height: 38px;">
+                        <button type="button"
+                            class="btn btn-subtle p-0 rounded-circle border-0 d-flex align-items-center"
+                            id="userDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
+                            aria-label="User account menu" style="width: 38px; height: 38px;">
                             @if ($currentUser?->profile_photo_url)
                                 <img src="{{ $currentUser->profile_photo_url }}" alt="{{ $currentUser->name }}"
                                     class="rounded-circle object-fit-cover shadow-xs border border-2 border-warning"
@@ -318,8 +321,10 @@
                                 @endif
                                 <div class="overflow-hidden">
                                     <h6 class="fw-bold mb-0 text-navy-900 text-truncate">{{ $currentUser?->name }}</h6>
-                                    <div class="small text-muted text-truncate font-mono" style="font-size: 0.75rem;">{{ $currentUser?->email }}</div>
-                                    <span class="badge bg-secondary font-mono mt-1 text-uppercase" style="font-size: 0.65rem;">
+                                    <div class="small text-muted text-truncate font-mono" style="font-size: 0.75rem;">
+                                        {{ $currentUser?->email }}</div>
+                                    <span class="badge bg-secondary font-mono mt-1 text-uppercase"
+                                        style="font-size: 0.65rem;">
                                         {{ str_replace('_', ' ', $currentUser?->role ?: 'user') }}
                                     </span>
                                 </div>
@@ -327,12 +332,14 @@
 
                             <!-- Actions Menu -->
                             <div class="p-2">
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold"
+                                <button type="button"
+                                    class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold"
                                     data-bs-toggle="modal" data-bs-target="#avatarUpdateModal">
                                     <i class="bi bi-camera-fill text-warning fs-6"></i>
                                     <span>Update Profile Photo</span>
                                 </button>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold"
+                                <button type="button"
+                                    class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 small fw-semibold"
                                     data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                                     <i class="bi bi-key-fill text-primary fs-6"></i>
                                     <span>Change Password</span>
@@ -375,7 +382,8 @@
     </div>
 
     <!-- Modal: Update Profile Photo -->
-    <div class="modal fade" id="avatarUpdateModal" tabindex="-1" aria-labelledby="avatarUpdateModalLabel" aria-hidden="true">
+    <div class="modal fade" id="avatarUpdateModal" tabindex="-1" aria-labelledby="avatarUpdateModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="modal-header bg-light border-bottom p-3">
@@ -384,7 +392,8 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="avatarUploadForm" method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data">
+                <form id="avatarUploadForm" method="POST" action="{{ route('profile.avatar.update') }}"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body p-4 text-center">
                         <div class="position-relative d-inline-block mb-3">
@@ -403,15 +412,19 @@
                                     style="width: 100px; height: 100px; font-size: 2rem; background-color: var(--navy-900, #0a192f);">
                                     {{ $currentUser?->initials ?: 'U' }}
                                 </div>
-                                <img src="" id="avatarPreviewImg" class="rounded-circle object-fit-cover shadow border border-3 border-warning d-none"
+                                <img src="" id="avatarPreviewImg"
+                                    class="rounded-circle object-fit-cover shadow border border-3 border-warning d-none"
                                     style="width: 100px; height: 100px;" alt="Avatar Preview">
                             @endif
                         </div>
 
                         <div class="mb-3 text-start">
-                            <label for="avatarFileInput" class="form-label small fw-bold text-navy-900">Choose Image File</label>
-                            <input class="form-control form-control-sm" type="file" id="avatarFileInput" name="avatar" accept="image/jpeg,image/png,image/jpg,image/webp" required>
-                            <div class="form-text small" style="font-size: 0.75rem;">Supported formats: JPG, PNG, WEBP. Max size: 5MB.</div>
+                            <label for="avatarFileInput" class="form-label small fw-bold text-navy-900">Choose Image
+                                File</label>
+                            <input class="form-control form-control-sm" type="file" id="avatarFileInput" name="avatar"
+                                accept="image/jpeg,image/png,image/jpg,image/webp" required>
+                            <div class="form-text small" style="font-size: 0.75rem;">Supported formats: JPG, PNG, WEBP.
+                                Max size: 5MB.</div>
                         </div>
 
                         <div id="avatarUploadAlert" class="alert alert-danger py-2 small d-none text-start mb-0"></div>
@@ -437,7 +450,8 @@
     </div>
 
     <!-- Modal: Change Password -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="modal-header bg-light border-bottom p-3">
@@ -453,19 +467,26 @@
                         <div id="changePasswordAlert" class="alert alert-danger py-2 small d-none mb-3"></div>
 
                         <div class="mb-3">
-                            <label for="headerCurrentPassword" class="form-label small fw-bold text-navy-900">Current Password</label>
-                            <input type="password" class="form-control form-control-sm" id="headerCurrentPassword" name="current_password" required autocomplete="current-password">
+                            <label for="headerCurrentPassword" class="form-label small fw-bold text-navy-900">Current
+                                Password</label>
+                            <input type="password" class="form-control form-control-sm" id="headerCurrentPassword"
+                                name="current_password" required autocomplete="current-password">
                         </div>
 
                         <div class="mb-3">
-                            <label for="headerNewPassword" class="form-label small fw-bold text-navy-900">New Password</label>
-                            <input type="password" class="form-control form-control-sm" id="headerNewPassword" name="password" required autocomplete="new-password">
-                            <div class="form-text small" style="font-size: 0.72rem;">Minimum 8 characters with mixed case letters and numbers.</div>
+                            <label for="headerNewPassword" class="form-label small fw-bold text-navy-900">New
+                                Password</label>
+                            <input type="password" class="form-control form-control-sm" id="headerNewPassword"
+                                name="password" required autocomplete="new-password">
+                            <div class="form-text small" style="font-size: 0.72rem;">Minimum 8 characters with mixed
+                                case letters and numbers.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="headerConfirmPassword" class="form-label small fw-bold text-navy-900">Confirm New Password</label>
-                            <input type="password" class="form-control form-control-sm" id="headerConfirmPassword" name="password_confirmation" required autocomplete="new-password">
+                            <label for="headerConfirmPassword" class="form-label small fw-bold text-navy-900">Confirm
+                                New Password</label>
+                            <input type="password" class="form-control form-control-sm" id="headerConfirmPassword"
+                                name="password_confirmation" required autocomplete="new-password">
                         </div>
                     </div>
                     <div class="modal-footer bg-light p-3">
